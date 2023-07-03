@@ -1,0 +1,36 @@
+# Ignore Django-related files
+*.pyc
+__pycache__/
+db.sqlite3
+
+# Ignore development and deployment files
+*.env
+*.log
+*.pyo
+*.swp
+*.swo
+*.pyc
+*.pyo
+*.pyc
+
+# Ignore static files
+/static/
+/media/
+
+# Ignore sensitive information
+*.secret_key
+*.key
+
+# Ignore IDE and editor-specific files
+.vscode/
+.idea/
+*.pydevproject
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+# ignore venv
+venv
+
+# migrations
+*initial.py

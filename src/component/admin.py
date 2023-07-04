@@ -1,3 +1,7 @@
+from django.apps import apps
 from django.contrib import admin
+from ModelTracker.Tracker import TrackerAdmin
 
-# Register your models here.
+from .models import BomComponent
+
+admin.site.register(BomComponent, TrackerAdmin)

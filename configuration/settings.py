@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'src.core',
     'src.user',
+    'src.component',
     'rest_framework',
     'ModelTracker'
 ]

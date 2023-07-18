@@ -5,9 +5,11 @@ from .models import BomUser
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        depth = 1
+        depth = 2
         model = BomUser
         exclude = (
+            "user_permissions",
+            "groups",
             "is_staff",
             "is_superuser",
             "is_active",

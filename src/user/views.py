@@ -14,6 +14,7 @@ from .serializers import UserSerializer
 
 
 class UserRegistrationView(APIView):
+
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -30,7 +31,7 @@ class Login(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        data = serializer.is_valid(raise_exception=True)
+        serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         access_obj = AccessToken(data.get("access"))
         user_id = access_obj["user_id"]
@@ -38,6 +39,19 @@ class Login(TokenObtainPairView):
         user.last_login = datetime.now()
         user.save()
         serialized_user = UserSerializer(user)
-        data["user"] = serialized_user.data
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
-
+        res = Response({'user': serialized_user.data}, status=status.HTTP_200_OK)
+        res.set_cookie(
+            key='access_token',
+            value=data.get("access"),
+            httponly=True,
+            secure=True,
+            samesite='Strict'
+        )
+        res.set_cookie(
+            key='refresh_token',
+            value=data.get("refresh"),
+            httponly=True,
+            secure=True,
+            samesite='Strict'
+        )
+        return res

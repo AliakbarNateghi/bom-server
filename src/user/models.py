@@ -10,7 +10,7 @@ class BomUser(AbstractUser, BomBaseModel):
         upload_to="core/UploadedFiles/avatars", null=True, blank=True
     )
     status = models.CharField(max_length=255, null=True, blank=True)
-    phone_number = models.CharField(max_length=20, null=False, blank=False)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
     groups = models.ManyToManyField(
         Group,
         verbose_name=_("groups"),

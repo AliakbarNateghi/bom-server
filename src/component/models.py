@@ -89,46 +89,46 @@ class BomComponent(BomBaseModel):
     unit_per_assy = models.IntegerField()
     unit_per_end_item = models.IntegerField()
     corrected_units_per_end_item = models.IntegerField()
-    gg_qty = models.IntegerField() # check
-    srp = models.CharField(max_length=32) # check
+    gg_qty = models.IntegerField()
+    srp = models.CharField(max_length=32) 
     store_comment = models.TextField(max_length=1024)
     assembly = models.BooleanField(default=False)
     standard_part = models.BooleanField(default=False)
     material = models.CharField(max_length=64)
-    mfg_complexity_level = models.CharField(max_length=64) # check
+    mfg_complexity_level = models.CharField(max_length=64) 
     disassembled = models.CharField(max_length=64) # persian # moving the calendar from english to persian
     supplying_or_manufacturing = models.CharField(max_length=16)
-    internal_or_external_outsourcing = models.CharField(max_length=64) # check
-    vendor = models.CharField(max_length=64) # check
-    joining = models.CharField(max_length=64) # check
+    internal_or_external_outsourcing = models.CharField(max_length=64) 
+    vendor = models.CharField(max_length=64) 
+    joining = models.CharField(max_length=64) 
     manufacturing_process = models.CharField(max_length=256)
-    raw_material_form = models.CharField(max_length=64) # check
+    raw_material_form = models.CharField(max_length=64) 
     function = models.CharField(max_length=64)
     qc_criteria = models.CharField(max_length=32)
-    manufacturing_priority = models.CharField(max_length=64) # check
-    manufacturing_responsible_department = models.CharField(max_length=16) # Should be choise or a relational to user groups
+    manufacturing_priority = models.CharField(max_length=64) 
+    manufacturing_responsible_department = models.CharField(max_length=16) # relational to user groups
     designing_responsible_department = models.CharField(max_length=32)
     usage_on_other_engines = models.CharField(max_length=64)
     manufacturing_parts_category = models.CharField(max_length=64)
     scope_matrix_category = models.CharField(max_length=64)
-    requires_manufacturing_or_supplying_for_reassembly = models.CharField(max_length=64) # check
+    requires_manufacturing_or_supplying_for_reassembly = models.CharField(max_length=64) 
     system_D_requirements = models.TextField(max_length=1024)
-    percurment_state = models.CharField(max_length=64) # check
-    details = models.CharField(max_length=16) # check
+    percurment_state = models.CharField(max_length=64) 
+    details = models.CharField(max_length=16) 
     joint_type = models.CharField(max_length=32)
-    discarded_during_disassembly = models.CharField(max_length=32) # check
+    discarded_during_disassembly = models.CharField(max_length=32) 
     expendables = models.BooleanField()
-    discarded_or_unusable_according_to_docs = models.CharField(max_length=32) # check
-    destroyed_for_analysis = models.CharField(max_length=32) # check
-    rejected_by_qc_or_inspection = models.CharField(max_length=32) # check
-    class_size_or_weight_as_required = models.CharField(max_length=32) # check
+    discarded_or_unusable_according_to_docs = models.CharField(max_length=32) 
+    destroyed_for_analysis = models.CharField(max_length=32) 
+    rejected_by_qc_or_inspection = models.CharField(max_length=32)
+    class_size_or_weight_as_required = models.CharField(max_length=32)
     EBOM = models.IntegerField()
 
     class Meta:
         permissions = list(zip(permission_codes, permission_names))
 
-    def __str__(self):
-        return self.ID
+    # def __str__(self):
+    #     return self.ID
     
 
 class FieldPermission(models.Model):

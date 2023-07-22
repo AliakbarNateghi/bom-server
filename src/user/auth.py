@@ -10,6 +10,9 @@ class CookieBaseJWTAuthentication(JWTAuthentication):
         return super().get_header(request)
 
     def authenticate(self, request):
+        # Allow unauthenticated requests for registration endpoint
+        if request.path == '/api/register/':
+            return None
         access_token = request.COOKIES.get("access_token")
         refresh_token = request.COOKIES.get("refresh_token")
         try:

@@ -13,8 +13,7 @@ class BomBaseManger(models.Manager):
         return super().get_queryset()
 
 
-# class BomBaseModel(Tracker.ModelTracker):
-class BomBaseModel(models.Model):  # Just for test for not saving logs
+class BomBaseModel(Tracker.ModelTracker):
     deleted = models.BooleanField(default=False)
     deletable = models.BooleanField(default=True)
     editable = models.BooleanField(default=True)

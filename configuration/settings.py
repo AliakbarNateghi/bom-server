@@ -33,7 +33,9 @@ CORS_ORIGIN_ALLOW_ALL = os.getenv("CORS_ORIGIN_ALLOW_ALL", "False").lower() == "
 
 CORS_ALLOW_CREDENTIALS = True
 
-ROOT_URLCONF = "configuration.urls"
+ROOT_URLCONF = 'configuration.urls'
+
+AUTH_USER_MODEL = "user.BomUser"
 
 # Application definition
 
@@ -67,9 +69,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "ModelTracker.middleware.ModelTrackerMiddleware",
 ]
-
-ROOT_URLCONF = 'configuration.urls'
-AUTH_USER_MODEL = "user.BomUser"
 
 # Configure Django Rest Framework
 REST_FRAMEWORK = {

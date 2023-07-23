@@ -1,16 +1,20 @@
 from datetime import datetime
-
+import numpy as np
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import action
+from rest_framework.viewsets import ModelViewSet, mixins, GenericViewSet
+from rest_framework.renderers import JSONRenderer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import BomUser
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserInfoSerializer
+from ..core.permissions import IsOwner
 
 
 class UserRegistrationView(APIView):
@@ -55,3 +59,25 @@ class Login(TokenObtainPairView):
             samesite='Strict'
         )
         return res
+    
+
+class UserInfo(
+    mixins.RetrieveModelMixin, 
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
+    queryset = BomUser.objects.all()
+    serializer_class = UserInfoSerializer
+    permission_classes = [IsAuthenticated, IsOwner]
+    lookup_field = 'username'  # Specify the field to use for slug lookup
+    
+    def get_queryset(self):
+        return self.queryset.filter(id=self.request.user.id)
+    
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_queryset()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)

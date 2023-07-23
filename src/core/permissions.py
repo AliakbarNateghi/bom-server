@@ -14,3 +14,11 @@ class TestPermission(permissions.BasePermission):
         groups = user.groups.all()
         # if request.method in permissions.SAFE_METHODS:
         #     field_permissions = FieldPermission.objects.
+
+
+class IsOwner(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.id == request.user.id

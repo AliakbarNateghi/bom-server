@@ -19,3 +19,18 @@ class UserSerializer(serializers.ModelSerializer):
             "last_login",
         )
         extra_kwargs = {"password": {"write_only": True}}
+
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        depth = 2
+        model = BomUser
+        fields = (
+            'first_name',
+            'last_name',
+            'email',
+            'phone_number',
+            'username',
+            'groups',
+        )
+        extra_kwargs = {"password": {"write_only": True}}

@@ -51,19 +51,20 @@ class Component(ModelViewSet):
             except BomComponent.DoesNotExist:
                 pass
         queryset_list = list(queryset_dict.values())
-        print(f"queryset_dict: {queryset_dict}")
-        print(f"queryset_list: {queryset_list}")
         return Response(queryset_list, status=status.HTTP_200_OK)
 
     def partial_update(self, request, pk=None):
+        print(f'reauest.data : {request.data}')
         user = request.user
         groups = user.groups.all()
         obj = BomComponent.objects.get(id=pk)
-        print(f"request.data : {request.data}")
+        initial_obj = obj
         json_dict = request.data
-        print(f"json_dict : {json_dict}")
         instances = FieldPermission.objects.filter(
             group__in=groups, editable=True, instance_id=pk
+        )
+        notEditable_instances = FieldPermission.objects.filter(
+            group__in=groups, editable=False, instance_id=pk
         )
         if not instances:
             return Response(
@@ -72,8 +73,6 @@ class Component(ModelViewSet):
         try:
             for instance in instances:
                 for key, value in json_dict.items():
-                    print(f"key : {key}, value: {value}")
-                    print(f"instance.field: {instance.field}")
                     if instance.field == key and instance.editable:
                         data = {f"{key}": value}
                         serializer = self.get_serializer(obj, data=data, partial=True)
@@ -83,7 +82,6 @@ class Component(ModelViewSet):
             queryset_dict = {}
             for instance in instances:
                 field_name = instance.field
-                print(f"filed_name: {field_name}")
                 try:
                     obj = BomComponent.objects.get(id=pk)
                     field_value = getattr(obj, field_name)
@@ -93,17 +91,14 @@ class Component(ModelViewSet):
                             # "editable": instance.editable,
                         }
                     queryset_dict[instance.instance_id][field_name] = field_value
-                    print(f"queryset_dict: {queryset_dict}")
                 except BomComponent.DoesNotExist:
                     pass
             queryset_list = list(queryset_dict.values())
-            print(f"queryset_list: {queryset_list}")
-            false_type_response = {"message": "type problem", "data": queryset_list}
+            false_type_response = {"message": "type", "data": queryset_list}
             return Response(false_type_response, status=status.HTTP_200_OK)
         queryset_dict = {}
         for instance in instances:
             field_name = instance.field
-            print(f"filed_name: {field_name}")
             obj = BomComponent.objects.get(id=pk)
             try:
                 field_value = getattr(obj, field_name)
@@ -112,26 +107,20 @@ class Component(ModelViewSet):
                         "id": instance.instance_id,
                     }
                 queryset_dict[instance.instance_id][field_name] = field_value
-                print(f"queryset_dict: {queryset_dict}")
             except BomComponent.DoesNotExist:
                 pass
-        print(f"obj : {type(obj)}")
         queryset_list = list(queryset_dict.values())
-        print(f"queryset_list: {type(queryset_list[0])}")
-        result = compare_instance_with_dict(obj, queryset_list[0])
-        print(f"result : {result}")
+        print(f'initial_obj : {initial_obj.ID}')
+        print(f'queryset_list[0] : {queryset_list[0]}')
+        updated_keys = [key for key, value in request.data.items() for key_2, value_2 in initial_obj.__dict__.items() if key == key_2 and value_2 != value]
+
+        result = any(updated_key == not_editable.field for not_editable in notEditable_instances for updated_key in updated_keys)
+                
         true_response = {
-            "message": "permission problem" if result else "success",
+            "message": "permission" if result else "success",
             "data": queryset_list,
         }
         return Response(true_response, status=status.HTTP_200_OK)
-
-        # return Response(serializer.data, status=status.HTTP_200_OK)
-        # continue
-        # return Response({"message": "Something is wrong"})
-
-    # def partial_update(self, request, *args, **kwargs):
-    #     return super().partial_update(request, *args, **kwargs)
 
     # def create(self, request):
     #     user = request.user

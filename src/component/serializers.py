@@ -6,15 +6,16 @@ from .models import BomComponent, FieldPermission
 class ComponentSerializer(serializers.ModelSerializer):
     class Meta:
         model = BomComponent
-        exclude = [
-            'id',
-            'deleted',
-            'deletable',
-            'editable',
-        ]
+        fields = "__all__"
+        # exclude = [
+        #     'id',
+        #     'deleted',
+        #     'deletable',
+        #     'editable',
+        # ]
 
 
 class FieldPermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = FieldPermission
-        fields = '__all__'
+        fields = "__all__"

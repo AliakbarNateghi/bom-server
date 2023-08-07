@@ -21,5 +21,5 @@ urlpatterns = [
     # re_path("^api/", include("src.core.urls")),
     re_path("^api/", include("src.user.urls")),
     re_path("^api/", include("src.component.urls")),
-    re_path(r"^track/", include("ModelTracker.urls")),
+    # re_path(r"^track/", include("ModelTracker.urls")),
 ]

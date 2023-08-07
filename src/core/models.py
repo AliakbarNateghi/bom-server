@@ -1,8 +1,9 @@
-from django.db import models
 from django.contrib.contenttypes.models import ContentType
+from django.db import models
 from django.db.models.query import QuerySet
 from django.utils import translation
-from ModelTracker import Tracker
+
+from ..log import Tracker
 
 
 class BomBaseManger(models.Manager):
@@ -16,12 +17,10 @@ class BomBaseManger(models.Manager):
 class BomBaseModel(Tracker.ModelTracker):
     deleted = models.BooleanField(default=False)
     deletable = models.BooleanField(default=True)
-    editable = models.BooleanField(default=True)
+    # editable = models.BooleanField(default=True)
 
     class Meta:
         abstract = True
 
     objects = BomBaseManger()
     indexes = [models.Index(fields=["deleted"])]
-
-

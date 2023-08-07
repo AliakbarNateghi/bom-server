@@ -13,9 +13,6 @@ class UserSerializer(serializers.ModelSerializer):
             "is_staff",
             "is_superuser",
             "is_active",
-            "editable",
-            "deletable",
-            "deleted",
             "last_login",
         )
         extra_kwargs = {"password": {"write_only": True}}
@@ -26,11 +23,11 @@ class UserInfoSerializer(serializers.ModelSerializer):
         depth = 2
         model = BomUser
         fields = (
-            'first_name',
-            'last_name',
-            'email',
-            'phone_number',
-            'username',
-            'groups',
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "username",
+            "groups",
         )
         extra_kwargs = {"password": {"write_only": True}}

@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from ..core.models import BomBaseModel
 
 
-class BomUser(AbstractUser, BomBaseModel):
+class BomUser(AbstractUser):
     # avatar = models.ImageField(
     #     upload_to="core/UploadedFiles/avatars", null=True, blank=True
     # )

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "ModelTracker",
+    "cursor_pagination",
     "src.core",
     "src.user",
     "src.component",
@@ -81,6 +82,8 @@ REST_FRAMEWORK = {
     # "DEFAULT_PERMISSION_CLASSES": [
     #     "rest_framework.permissions.IsAuthenticated",
     # ],
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
+    # 'PAGE_SIZE': 10
 }
 
 # Set the JWT access token expiration time

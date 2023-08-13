@@ -1,4 +1,3 @@
-# from cursor_pagination import CursorPaginator
 from rest_framework.pagination import CursorPagination, PageNumberPagination
 
 

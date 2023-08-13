@@ -120,7 +120,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("PG_NAME", "bom"),
         "USER": os.getenv("PG_USER", "postgres"),
-        "PASSWORD": os.getenv("PG_PASSWORD", "7294"),
+        "PASSWORD": os.getenv("PG_PASSWORD", "postgres"),
         "HOST": os.getenv("PG_HOST", "localhost"),
         "PORT": os.getenv("PG_PORT", "5432"),
     }

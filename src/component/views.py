@@ -28,71 +28,80 @@ class Component(ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomCursorPagination
 
-    # def list(self, request, *args, **kwargs):
-    #     user = request.user
-    #     groups = user.groups.all()
-    #     page = (
-    #         re.findall(r"\d+", request.query_params.get("page"))
-    #         if request.query_params.get("page")
-    #         else ""
-    #     )
-    #     page = int(page[0]) if page else 0
-
-    #     instances = FieldPermission.objects.filter(group__in=groups).order_by("instance_id")
-    #     paginator = Paginator(instances.values_list('instance_id', flat=True).distinct(), 15)
-    #     instance_ids = paginator.get_page(page)
-    #     instances = instances.filter(instance_id__in=instance_ids)
-
-    ##     queryset = BomComponent.objects.filter(id__in=instance_ids)
-    #     queryset = self.queryset.filter(id__in=instance_ids)
-    #     queryset_dict = {}
-    #     for instance in instances:
-    #         id = instance.instance_id
-    #         field = instance.field
-    #         obj = queryset.get(id=id)
-    #         field_value = getattr(obj, field)
-    #         try:
-    #             if id not in queryset_dict:
-    #                 queryset_dict[id] = {
-    #                     "id": id,
-    #                 }
-    #             queryset_dict[id][field] = field_value
-    #         except BomComponent.DoesNotExist:
-    #             pass
-
-    #     return Response(list(queryset_dict.values()), status=status.HTTP_200_OK)
-
+    """
+        page number pagination
+    """
     def list(self, request, *args, **kwargs):
         user = request.user
         groups = user.groups.all()
-        instances = self.paginate_queryset(
-            FieldPermission.objects.filter(group__in=groups).order_by("instance_id")
+        page = (
+            re.findall(r"\d+", request.query_params.get("page"))
+            if request.query_params.get("page")
+            else ""
         )
-        instance_ids = list(set([instance.instance_id for instance in instances]))
+        page = int(page[0]) if page else 0
+
+        instances = FieldPermission.objects.filter(group__in=groups).order_by("instance_id")
+        paginator = Paginator(instances.values_list('instance_id', flat=True).distinct(), 15)
+        instance_ids = paginator.get_page(page)
+        instances = instances.filter(instance_id__in=instance_ids)
 
         queryset = self.queryset.filter(id__in=instance_ids)
-        if instance_ids is not None:
-            queryset_dict = {}
-            for instance in instances:
-                id = instance.instance_id
-                obj = queryset.get(id=id)
-                field = instance.field
-                field_value = getattr(obj, field)
-                try:
-                    if id not in queryset_dict:
-                        queryset_dict[id] = {
-                            "id": id,
-                        }
-                    queryset_dict[id][field] = field_value
-                except BomComponent.DoesNotExist:
-                    pass
+        queryset_dict = {}
+        for instance in instances:
+            id = instance.instance_id
+            field = instance.field
+            editable = instance.editable            
+            obj = queryset.get(id=id)
+            field_value = getattr(obj, field)
+            try:
+                if id not in queryset_dict:
+                    queryset_dict[id] = {
+                        "id": id,
+                    }
+                if editable == True:
+                    queryset_dict[id][field] = [field_value, 1]
+                else:
+                    queryset_dict[id][field] = [field_value, 0]
+            except BomComponent.DoesNotExist:
+                pass
 
-            return self.get_paginated_response(list(queryset_dict.values()))
+        print(list(queryset_dict.values()))
+        return Response(list(queryset_dict.values()), status=status.HTTP_200_OK)
 
-        return Response([], status=status.HTTP_200_OK)
+    """
+        cursor pagination
+    """
+    # def list(self, request, *args, **kwargs):
+    #     user = request.user
+    #     groups = user.groups.all()
+    #     instances = self.paginate_queryset(
+    #         FieldPermission.objects.filter(group__in=groups).order_by("instance_id")
+    #     )
+    #     instance_ids = list(set([instance.instance_id for instance in instances]))
+
+    #     queryset = self.queryset.filter(id__in=instance_ids)
+    #     if instance_ids is not None:
+    #         queryset_dict = {}
+    #         for instance in instances:
+    #             id = instance.instance_id
+    #             obj = queryset.get(id=id)
+    #             field = instance.field
+    #             field_value = getattr(obj, field)
+    #             try:
+    #                 if id not in queryset_dict:
+    #                     queryset_dict[id] = {
+    #                         "id": id,
+    #                     }
+    #                 queryset_dict[id][field] = field_value
+    #             except BomComponent.DoesNotExist:
+    #                 pass
+
+    #         return self.get_paginated_response(list(queryset_dict.values()))
+
+    #     return Response([], status=status.HTTP_200_OK)
 
     def partial_update(self, request, pk=None):
-        print(f"reauest.data : {request.data}")
         user = request.user
         groups = user.groups.all()
         obj = BomComponent.objects.get(id=pk)

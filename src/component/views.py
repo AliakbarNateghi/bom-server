@@ -48,6 +48,7 @@ class Component(ModelViewSet):
 
         queryset = self.queryset.filter(id__in=instance_ids)
         queryset_dict = {}
+        editable_dict = {}
         for instance in instances:
             id = instance.instance_id
             field = instance.field
@@ -59,15 +60,20 @@ class Component(ModelViewSet):
                     queryset_dict[id] = {
                         "id": id,
                     }
-                if editable == True:
-                    queryset_dict[id][field] = [field_value, 1]
-                else:
-                    queryset_dict[id][field] = [field_value, 0]
+                    editable_dict[id] = {
+                        "id": id,
+                    }
+                queryset_dict[id][field] = field_value
+                editable_dict[id][field] = editable
             except BomComponent.DoesNotExist:
                 pass
 
-        print(list(queryset_dict.values()))
-        return Response(list(queryset_dict.values()), status=status.HTTP_200_OK)
+        response_data = {
+            'querysets': list(queryset_dict.values()),
+            'editables': list(editable_dict.values()),
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
     """
         cursor pagination

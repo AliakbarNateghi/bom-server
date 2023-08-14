@@ -224,7 +224,7 @@ class FieldPermission(models.Model):
         max_length=128, null=True, blank=True, choices=FIELD_CHOISES
     )
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    editable = models.BooleanField(default=False)
+    editable = models.BooleanField()
 
     def __str__(self):
         return f"{self.editable} {self.instance_id} {self.field}"

@@ -1,10 +1,11 @@
 from datetime import datetime
 
 import numpy as np
+from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,9 +14,9 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from ..core.permissions import IsOwner
+from ..core.permissions import IsGod, IsOwner
 from .models import BomUser
-from .serializers import UserInfoSerializer, UserSerializer
+from .serializers import GroupSerializer, UserInfoSerializer, UserSerializer
 
 
 class UserRegistrationView(APIView):
@@ -89,3 +90,9 @@ class UserInfo(
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+
+
+class GroupsViewSet(mixins.ListModelMixin, GenericViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+    permission_classes = [IsAuthenticated, IsGod, IsAdminUser]

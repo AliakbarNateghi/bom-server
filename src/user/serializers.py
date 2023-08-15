@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = BomUser
         exclude = (
             "user_permissions",
-            "groups",
+            # "groups",
             "is_staff",
             "is_superuser",
             "is_active",
@@ -31,7 +31,13 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "username",
             "groups",
         )
-        extra_kwargs = {"password": {"write_only": True}}
+        # extra_kwargs = {"password": {"read_only": True}}
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_password = serializers.CharField(required=True)
 
 
 class GroupSerializer(serializers.ModelSerializer):

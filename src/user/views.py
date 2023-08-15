@@ -16,7 +16,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from ..core.permissions import IsGod, IsOwner
 from .models import BomUser
-from .serializers import GroupSerializer, UserInfoSerializer, UserSerializer
+from .serializers import GroupSerializer, UserInfoSerializer, UserSerializer, PasswordChangeSerializer
 
 
 class UserRegistrationView(APIView):
@@ -83,6 +83,9 @@ class UserInfo(
 
     def get_queryset(self):
         return self.queryset.filter(id=self.request.user.id)
+    
+    def perform_update(self, serializer):
+        serializer.save(username=self.request.user.username)
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_queryset()
@@ -90,6 +93,28 @@ class UserInfo(
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def change_password(self, request, pk=None):
+        user = self.get_object()
+        serializer = PasswordChangeSerializer(data=request.data)
+
+        if serializer.is_valid():
+            # Check if the old password matches the user's current password
+            if not user.check_password(serializer.validated_data['old_password']):
+                return Response({'error': 'Invalid old password'}, status=400)
+
+            # Check if the new password and confirmation match
+            if serializer.validated_data['new_password'] != serializer.validated_data['confirm_password']:
+                return Response({'error': 'New passwords do not match'}, status=400)
+
+            # Set the new password and save the user
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+
+            return Response({'message': 'Password changed successfully'}, status=200)
+
+        return Response(serializer.errors, status=400)
 
 
 class GroupsViewSet(mixins.ListModelMixin, GenericViewSet):

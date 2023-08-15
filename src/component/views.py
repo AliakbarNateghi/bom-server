@@ -166,8 +166,8 @@ class Component(ModelViewSet):
         # print(f'updated_keys : {notEditable_instances}')
 
         result = any(
-            updated_key != editable.field
-            for editable in instances
+            updated_key == editable.field
+            for editable in notEditable_instances
             for updated_key in updated_keys
         )
 

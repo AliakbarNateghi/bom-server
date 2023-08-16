@@ -95,26 +95,26 @@ class UserInfo(
         return Response(serializer.data)
     
     @action(detail=True, methods=['post'])
-    def change_password(self, request, pk=None):
+    def change_password(self, request, username=None):
         user = self.get_object()
         serializer = PasswordChangeSerializer(data=request.data)
 
         if serializer.is_valid():
             # Check if the old password matches the user's current password
             if not user.check_password(serializer.validated_data['old_password']):
-                return Response({'error': 'Invalid old password'}, status=400)
+                return Response({'error': 'Invalid old pass'}, status=400)
 
             # Check if the new password and confirmation match
             if serializer.validated_data['new_password'] != serializer.validated_data['confirm_password']:
-                return Response({'error': 'New passwords do not match'}, status=400)
+                return Response({'error': 'not match'}, status=400)
 
             # Set the new password and save the user
             user.set_password(serializer.validated_data['new_password'])
             user.save()
 
-            return Response({'message': 'Password changed successfully'}, status=200)
+            return Response({'message': 'success'}, status=200)
 
-        return Response(serializer.errors, status=400)
+        return Response(serializer.errors, {'error': 'wrong'}, status=400)
 
 
 class GroupsViewSet(mixins.ListModelMixin, GenericViewSet):

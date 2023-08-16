@@ -1,6 +1,7 @@
 import json
 import re
 
+from django.contrib.auth.models import Group
 from django.core.paginator import Paginator
 from django.db.models import Prefetch, Q
 from rest_framework import status
@@ -190,11 +191,9 @@ class FieldPermissionView(ModelViewSet):
     #     return self.queryset.filter(group=self.kwargs["group"])
 
     def list(self, request, *args, **kwargs):
-        # print(f'groups : {request.query_params.get("group")}')
         group = request.query_params.get("group")
 
         user = self.request.user
-        groups = user.groups.all()
         page = (
             re.findall(r"\d+", request.query_params.get("page"))
             if request.query_params.get("page")
@@ -203,7 +202,7 @@ class FieldPermissionView(ModelViewSet):
         page = int(page[0]) if page else 0
         print(f"request.data : {request.data}")
 
-        instances = self.queryset.filter(group__name=group).order_by("instance_id")
+        instances = self.queryset.filter(group__id=group).order_by("instance_id")
         paginator = Paginator(
             instances.values_list("instance_id", flat=True).distinct(), 15
         )
@@ -219,77 +218,41 @@ class FieldPermissionView(ModelViewSet):
                 if id not in editable_dict:
                     editable_dict[id] = {"id": id}
                 editable_dict[id][field] = editable
-            except BomComponent.DoesNotExist:
+            except:
                 pass
 
         return Response(list(editable_dict.values()), status=status.HTTP_200_OK)
 
-    def partial_update(self, request, pk=None):
-        user = request.user
-        groups = user.groups.all()
-        obj = BomComponent.objects.get(id=pk)
-        initial_obj = obj
-        json_dict = request.data
-        print(f"json_dict : {json_dict}")
-        instances = self.queryset.filter(
-            group__in=groups, editable=True, instance_id=pk
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        permissions = self.queryset.filter(
+            instance_id=self.instance_id, group=self.group
         )
-        notEditable_instances = self.queryset.filter(
-            group__in=groups, editable=False, instance_id=pk
-        )
-        if not instances:
-            return Response({"message": "anyAccess"})
-
-        try:
-            for instance in instances:
-                for key, value in json_dict.items():
-                    if instance.field == key and instance.editable:
-                        data = {f"{key}": value}
-                        serializer = self.get_serializer(obj, data=data, partial=True)
-                        serializer.is_valid(raise_exception=True)
-                        serializer.save()
-        except:
-            queryset_dict = {}
-            for instance in instances:
-                field_name = instance.field
-                id = instance.instance_id
-                try:
-                    if id not in queryset_dict:
-                        obj = BomComponent.objects.get(id=pk)
-                        queryset_dict[id] = {"id": id}
-                    queryset_dict[id][field_name] = getattr(obj, field_name)
-                except BomComponent.DoesNotExist:
-                    pass
-            queryset_list = list(queryset_dict.values())
-            false_type_response = {"message": "type", "data": queryset_list}
-            return Response(false_type_response, status=status.HTTP_200_OK)
-        queryset_dict = {}
-        for instance in instances:
-            field_name = instance.field
+        editable_dict = {}
+        for instance in permissions:
             id = instance.instance_id
+            field = instance.field
+            editable = instance.editable
             try:
-                if id not in queryset_dict:
-                    obj = BomComponent.objects.get(id=pk)
-                    queryset_dict[id] = {"id": id}
-                queryset_dict[id][field_name] = getattr(obj, field_name)
-            except BomComponent.DoesNotExist:
+                if id not in editable_dict:
+                    editable_dict[id] = {"id": id}
+                editable_dict[id][field] = editable
+            except:
                 pass
-        queryset_list = list(queryset_dict.values())
-        updated_keys = [
-            key
-            for key, value in request.data.items()
-            for key_2, value_2 in initial_obj.__dict__.items()
-            if key == key_2 and value_2 != value
-        ]
 
-        result = any(
-            updated_key == not_editable.field
-            for not_editable in notEditable_instances
-            for updated_key in updated_keys
-        )
+        return Response(list(editable_dict.values()), status=status.HTTP_200_OK)
 
-        true_response = {
-            "message": "permission" if result else "success",
-            "data": queryset_list,
-        }
-        return Response(true_response, status=status.HTTP_200_OK)
+    def perform_create(self, serializer):
+        self.group = serializer.validated_data["group"]
+        self.field = serializer.validated_data["field"]
+        self.instance_id = serializer.validated_data["instance_id"]
+        instance = self.queryset.filter(
+            group=self.group,
+            field=self.field,
+            instance_id=self.instance_id,
+        ).first()
+        if instance:
+            instance.delete()
+        serializer.save()

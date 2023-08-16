@@ -227,4 +227,4 @@ class FieldPermission(models.Model):
     editable = models.BooleanField()
 
     def __str__(self):
-        return f"{self.editable} {self.instance_id} {self.field}"
+        return f"{self.group} {self.instance_id} {self.field}"

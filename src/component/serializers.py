@@ -18,4 +18,5 @@ class ComponentSerializer(serializers.ModelSerializer):
 class FieldPermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = FieldPermission
-        fields = "__all__"
+        fields = ["group", "field", "instance_id", "editable"]
+        # fields = "__all__"

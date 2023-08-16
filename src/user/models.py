@@ -23,3 +23,10 @@ class BomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+class HiddenColumns(models.Model):
+    hidden_cols = models.JSONField(null=True, blank=True, default=dict)
+    user = models.OneToOneField(BomUser, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user} : {self.hidden_cols}"

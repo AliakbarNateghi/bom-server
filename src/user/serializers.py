@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from rest_framework import serializers
 
-from .models import BomUser
+from .models import BomUser, HiddenColumns
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -43,4 +43,10 @@ class PasswordChangeSerializer(serializers.Serializer):
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ("name", "id")
+        fields = ["name", "id"]
+
+
+class HiddenColumnsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HiddenColumns
+        fields = ["hidden_cols"]

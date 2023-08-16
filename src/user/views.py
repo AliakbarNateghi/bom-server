@@ -15,8 +15,8 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from ..core.permissions import IsGod, IsOwner
-from .models import BomUser
-from .serializers import GroupSerializer, UserInfoSerializer, UserSerializer, PasswordChangeSerializer
+from .models import BomUser, HiddenColumns
+from .serializers import GroupSerializer, UserInfoSerializer, UserSerializer, PasswordChangeSerializer, HiddenColumnsSerializer
 
 
 class UserRegistrationView(APIView):
@@ -121,3 +121,31 @@ class GroupsViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [IsAuthenticated, IsGod, IsAdminUser]
+
+
+class HiddenColumnsViewSet(ModelViewSet):
+    queryset = HiddenColumns.objects.all()
+    serializer_class = HiddenColumnsSerializer
+    permission_classes = [IsAuthenticated, IsOwner]
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        try:
+            instance = self.queryset.get(user=self.request.user)
+            instance.delete()
+        except HiddenColumns.DoesNotExist:
+            pass
+        serializer.save(user=self.request.user)
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        
+
+
+

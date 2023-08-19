@@ -4,6 +4,7 @@ import re
 from django.contrib.auth.models import Group
 from django.core.paginator import Paginator
 from django.db.models import Prefetch, Q
+from django.http import QueryDict
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.pagination import CursorPagination
@@ -164,13 +165,18 @@ class Component(ModelViewSet):
             for key_2, value_2 in initial_obj.__dict__.items()
             if key == key_2 and value_2 != value
         ]
-        # print(f'updated_keys : {notEditable_instances}')
 
         result = any(
-            updated_key == editable.field
-            for editable in notEditable_instances
+            updated_key == not_editable.field
+            for not_editable in notEditable_instances
             for updated_key in updated_keys
-        )
+        ) 
+        # or any(
+        #     updated_key != not_editable.field and updated_key != instance.field
+        #     for instance in instances
+        #     for not_editable in notEditable_instances
+        #     for updated_key in updated_keys
+        # )
 
         true_response = {
             "message": "permission" if result else "success",
@@ -183,24 +189,21 @@ class FieldPermissionView(ModelViewSet):
     queryset = FieldPermission.objects.all()
     serializer_class = FieldPermissionSerializer
     permission_classes = [IsAuthenticated, IsGod, IsAdminUser]
-    # lookup_field = 'group'
-    # pagination_class = CustomPageNumberPagination
-
-    # def get_queryset(self):
-    #     print(f'groups : {self.kwargs["group"]}')
-    #     return self.queryset.filter(group=self.kwargs["group"])
 
     def list(self, request, *args, **kwargs):
-        group = request.query_params.get("group")
+        group = (
+            re.findall(r"\d+", request.query_params.get("group"))
+            if request.query_params.get("group")
+            else ""
+        )
+        group = int(group[0]) if group else 0
 
-        user = self.request.user
         page = (
             re.findall(r"\d+", request.query_params.get("page"))
             if request.query_params.get("page")
             else ""
         )
         page = int(page[0]) if page else 0
-        print(f"request.data : {request.data}")
 
         instances = self.queryset.filter(group__id=group).order_by("instance_id")
         paginator = Paginator(
@@ -212,12 +215,10 @@ class FieldPermissionView(ModelViewSet):
         editable_dict = {}
         for instance in instances:
             id = instance.instance_id
-            field = instance.field
-            editable = instance.editable
             try:
                 if id not in editable_dict:
                     editable_dict[id] = {"id": id}
-                editable_dict[id][field] = editable
+                editable_dict[id][instance.field] = instance.editable
             except:
                 pass
 
@@ -256,3 +257,43 @@ class FieldPermissionView(ModelViewSet):
         if instance:
             instance.delete()
         serializer.save()
+
+    def destroy(self, request, *args, **kwargs):
+        instance_id = kwargs["pk"]
+        field = request.GET.get('field')
+        group = request.GET.get('group')
+        try: 
+            instance = self.queryset.filter(
+                group__id=group,
+                instance_id=instance_id,
+                field=field,
+            ).first()
+            instance.delete()
+            Response(status=status.HTTP_204_NO_CONTENT)            
+        except:
+            # return Response({"message": "Can't delete the item"})
+            pass
+        
+        # instances = self.queryset.filter(
+        #     group__id=group,
+        #     instance_id=instance_id
+        # )
+        # editable_dict = {}
+        # for instance in instances:
+        #     id = instance.instance_id
+        #     field = instance.field
+        #     editable = instance.editable
+        #     try:
+        #         if id not in editable_dict:
+        #             editable_dict[id] = {"id": id}
+        #         editable_dict[id][field] = editable
+        #     except:
+        #         pass
+
+        # return Response(list(editable_dict.values()), status=status.HTTP_200_OK)
+       
+        
+
+        
+        
+    

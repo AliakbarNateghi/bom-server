@@ -262,17 +262,16 @@ class FieldPermissionView(ModelViewSet):
         instance_id = kwargs["pk"]
         field = request.GET.get('field')
         group = request.GET.get('group')
-        try: 
-            instance = self.queryset.filter(
-                group__id=group,
-                instance_id=instance_id,
-                field=field,
-            ).first()
-            instance.delete()
-            Response(status=status.HTTP_204_NO_CONTENT)            
-        except:
-            # return Response({"message": "Can't delete the item"})
-            pass
+        # try: 
+        instance = self.queryset.filter(
+            group__id=group,
+            instance_id=instance_id,
+            field=field,
+        ).first()
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)            
+        # except:
+        #     return Response({"message": "Can't delete the item"})
         
         # instances = self.queryset.filter(
         #     group__id=group,

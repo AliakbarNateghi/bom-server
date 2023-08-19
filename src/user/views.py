@@ -26,6 +26,7 @@ class UserRegistrationView(APIView):
             user = BomUser.objects.create_user(**serializer.validated_data)
             user.set_password(serializer.validated_data["password"])
             user.save()
+            HiddenColumns.objects.create(user=user, hidden_cols={})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

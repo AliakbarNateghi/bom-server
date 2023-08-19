@@ -10,13 +10,17 @@ from rest_framework.decorators import action
 from rest_framework.pagination import CursorPagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet, mixins
 
 from ..core.paginations import CustomCursorPagination, CustomPageNumberPagination
 from ..core.permissions import IsGod
 from ..core.versatile_funcs import compare_instance_with_dict
 from .models import BomComponent, FieldPermission
-from .serializers import ComponentSerializer, FieldPermissionSerializer
+from .serializers import (
+    ComponentSerializer,
+    FieldPermissionSerializer,
+    MassPermissionSerializer,
+)
 
 # PAGINATION_CLASSES = {
 #     'cursor': CursorPagination,
@@ -170,7 +174,7 @@ class Component(ModelViewSet):
             updated_key == not_editable.field
             for not_editable in notEditable_instances
             for updated_key in updated_keys
-        ) 
+        )
         # or any(
         #     updated_key != not_editable.field and updated_key != instance.field
         #     for instance in instances
@@ -260,19 +264,19 @@ class FieldPermissionView(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance_id = kwargs["pk"]
-        field = request.GET.get('field')
-        group = request.GET.get('group')
-        # try: 
+        field = request.GET.get("field")
+        group = request.GET.get("group")
+        # try:
         instance = self.queryset.filter(
             group__id=group,
             instance_id=instance_id,
             field=field,
         ).first()
         instance.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)            
+        return Response(status=status.HTTP_204_NO_CONTENT)
         # except:
         #     return Response({"message": "Can't delete the item"})
-        
+
         # instances = self.queryset.filter(
         #     group__id=group,
         #     instance_id=instance_id
@@ -290,9 +294,30 @@ class FieldPermissionView(ModelViewSet):
         #         pass
 
         # return Response(list(editable_dict.values()), status=status.HTTP_200_OK)
-       
-        
 
-        
-        
-    
+
+class MassPermissionViewSet(
+    mixins.CreateModelMixin,
+    GenericViewSet,
+):
+    queryset = FieldPermission.objects.all()
+    serializer_class = MassPermissionSerializer
+    permission_classes = [IsAuthenticated, IsGod, IsAdminUser]
+
+    def create(self, request, *args, **kwargs):
+        serializer = MassPermissionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        field = serializer.validated_data["field"]
+        group = serializer.validated_data["group"]
+        editable = serializer.validated_data.get("editable")
+        self.queryset.filter(field=field, group=group).delete()
+        if editable != None:
+            group = Group.objects.get(id=group)
+            instances = [
+                FieldPermission(
+                    instance_id=instance_id, field=field, group=group, editable=editable
+                )
+                for instance_id in range(BomComponent.objects.count())
+            ]
+            self.queryset.bulk_create(instances)
+        return Response({"message": "Done"})

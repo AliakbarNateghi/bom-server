@@ -55,6 +55,7 @@ class Component(ModelViewSet):
             instances.values_list("instance_id", flat=True).distinct(), 15
         )
         instance_ids = paginator.get_page(page)
+        print(f"instance_ids : {instance_ids}")
         instances = instances.filter(instance_id__in=instance_ids)
 
         queryset = self.queryset.filter(id__in=instance_ids)
@@ -63,13 +64,14 @@ class Component(ModelViewSet):
         for instance in instances:
             id = instance.instance_id
             field = instance.field
+            print(f"field : {field}")
             editable = instance.editable
             try:
                 if id not in queryset_dict:
                     obj = queryset.get(id=id)
                     queryset_dict[id] = {"id": id}
                     editable_dict[id] = {"id": id}
-                queryset_dict[id][field] = getattr(obj, field)
+                queryset_dict[id][field] = getattr(obj, field) if field else None
                 editable_dict[id][field] = editable
             except BomComponent.DoesNotExist:
                 pass
@@ -305,7 +307,7 @@ class MassPermissionViewSet(
     permission_classes = [IsAuthenticated, IsGod, IsAdminUser]
 
     def create(self, request, *args, **kwargs):
-        serializer = MassPermissionSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         field = serializer.validated_data["field"]
         group = serializer.validated_data["group"]
@@ -313,11 +315,12 @@ class MassPermissionViewSet(
         self.queryset.filter(field=field, group=group).delete()
         if editable != None:
             group = Group.objects.get(id=group)
+            count = BomComponent.objects.count()
             instances = [
                 FieldPermission(
                     instance_id=instance_id, field=field, group=group, editable=editable
                 )
-                for instance_id in range(BomComponent.objects.count())
+                for instance_id in range(1, count+1)
             ]
             self.queryset.bulk_create(instances)
         return Response({"message": "Done"})

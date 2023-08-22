@@ -11,10 +11,6 @@ def create_god_permissions(apps, schema_editor):
         for field in BomComponent._meta.get_fields()
         if field.name not in ["id", "deleted", "deletable"]
     ]
-    # field_permissions = []
-    # for i in range(1, BomComponent.objects.count() + 1):
-    #     for field_name in field_names:
-    #         field_permissions.append(FieldPermission(instance_id=i, editable=True, group=god, field=field_name))
     field_permissions = [
         FieldPermission(instance_id=i, editable=True, group=god, field=field_name)
         for i in range(1, BomComponent.objects.count() + 1)

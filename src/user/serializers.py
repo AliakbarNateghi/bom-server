@@ -34,6 +34,35 @@ class UserInfoSerializer(serializers.ModelSerializer):
         # extra_kwargs = {"password": {"read_only": True}}
 
 
+class UsersInfoReadOnlySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BomUser
+        depth = 1
+        fields = (
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "username",
+            "groups",
+        )
+        read_only_fields = (
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "username",
+            "groups",
+        )
+
+
+class UsersInfoWriteOnlySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BomUser
+        depth = 0
+        fields = ["groups",]
+
+
 class PasswordChangeSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)

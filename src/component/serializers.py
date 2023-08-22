@@ -25,4 +25,4 @@ class FieldPermissionSerializer(serializers.ModelSerializer):
 class MassPermissionSerializer(serializers.Serializer):
     field = serializers.CharField(required=True)
     group = serializers.IntegerField(required=True)
-    editable = serializers.BooleanField(required=False)
+    editable = serializers.BooleanField(required=False, allow_null=True)

@@ -16,7 +16,15 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from ..core.permissions import IsGod, IsOwner
 from .models import BomUser, HiddenColumns
-from .serializers import GroupSerializer, UserInfoSerializer, UserSerializer, PasswordChangeSerializer, HiddenColumnsSerializer
+from .serializers import (
+    GroupSerializer, 
+    UserInfoSerializer, 
+    UserSerializer, 
+    PasswordChangeSerializer, 
+    HiddenColumnsSerializer, 
+    UsersInfoReadOnlySerializer,
+    UsersInfoWriteOnlySerializer
+)
 
 
 class UserRegistrationView(APIView):
@@ -71,6 +79,25 @@ class Logout(APIView):
         return res
 
 
+class UsersInfo(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
+    queryset = BomUser.objects.all()
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    lookup_field = "username"
+
+    def get_serializer_class(self):
+        method = self.request.method
+        if method == 'PUT' or method == 'POST':
+            print("OKAY")
+            return UsersInfoWriteOnlySerializer
+        else:
+            return UsersInfoReadOnlySerializer
+
+
 class UserInfo(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
@@ -80,7 +107,7 @@ class UserInfo(
     queryset = BomUser.objects.all()
     serializer_class = UserInfoSerializer
     permission_classes = [IsAuthenticated, IsOwner]
-    lookup_field = "username"  # Specify the field to use for slug lookup
+    lookup_field = "username"
 
     def get_queryset(self):
         return self.queryset.filter(id=self.request.user.id)

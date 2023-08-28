@@ -9,9 +9,13 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 def create_superuser(apps, schema_editor):
     User = get_user_model()
+    hidden_cols = apps.get_model("user", "HiddenColumns")
+    user = apps.get_model("user", "BomUser")
 
     with transaction.atomic():
         User.objects.create_superuser(username="admin", password="1234")
+        user = user.objects.get(username="admin")
+        hidden_cols.objects.create(user=user, hidden_cols={})
 
 
 class Migration(migrations.Migration):

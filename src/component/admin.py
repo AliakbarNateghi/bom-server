@@ -3,6 +3,15 @@ from django.contrib import admin
 from jalali_date import datetime2jalali, date2jalali
 from jalali_date.admin import ModelAdminJalaliMixin, StackedInlineJalaliMixin, TabularInlineJalaliMixin	
     
+
+from ..log.Tracker import TrackerAdmin
+from .models import (
+    BomComponent,
+    BomFieldPermission,
+    ProvideComponent,
+    ProvideFieldPermission
+)
+
 # class MyInlines1(TabularInlineJalaliMixin, admin.TabularInline):
 # 	model = SecendModel
 
@@ -26,13 +35,6 @@ from jalali_date.admin import ModelAdminJalaliMixin, StackedInlineJalaliMixin, T
 # 	def get_created_jalali(self, obj):
 # 		return datetime2jalali(obj.created).strftime('%a, %d %b %Y %H:%M:%S')
 
-from ..log.Tracker import TrackerAdmin
-from .models import (
-    BomComponent,
-    BomFieldPermission,
-    ProvideComponent,
-    ProvideFieldPermission
-)
 
 admin.site.register(BomComponent, TrackerAdmin)
 admin.site.register(BomFieldPermission)

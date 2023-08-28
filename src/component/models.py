@@ -427,9 +427,14 @@ class ProvideComponent(BomBaseModel):
     financial_situation = models.CharField(
         null=True, blank=True, max_length=64, choices=FINANCIAL_SITUATION_CHOISE
     )
-    prepayment_request_date = JalaliDateField()
+
+    # prepayment_request_date = JalaliDateField()
+    prepayment_request_date = models.CharField(null=True, blank=True, max_length=10)
+
     prepayment_amount = models.BigIntegerField(null=True, blank=True)
-    prepayment_date = JalaliDateField()
+    
+    # prepayment_date = JalaliDateField()
+    prepayment_date = models.CharField(null=True, blank=True, max_length=10)
 
 
 class ProvideFieldPermission(models.Model):

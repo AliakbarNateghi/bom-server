@@ -97,7 +97,6 @@ class Component(ModelViewSet):
         for instance in instances:
             id = instance.instance_id
             field = instance.field
-            print(f"field : {instance}")
             editable = instance.editable
             try:
                 if id not in queryset_dict:

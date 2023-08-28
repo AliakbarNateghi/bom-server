@@ -24,9 +24,25 @@ groups = [
     "accessories normal",
 ]
 
+departments = [
+    "کمپرسور",
+    "فن",
+    "جانبی",
+    "توربین",
+    "ماینور پارت",
+    "محفظه احتراق",
+    "طراحي سازه موتور",
+    "استاندارد و كيفيت",
+]
+
 
 def create_default_group(apps, schema_editor):
     Group = apps.get_model("auth", "Group")
+    Department = apps.get_model("user", "Department")
+
+    for department in departments:
+        Department.objects.create(name=department)
+
     for group in groups:
         Group.objects.create(name=group)
 

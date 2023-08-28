@@ -12,10 +12,15 @@ def extract_initial_data():
 
 
 def create_default_group(apps, schema_editor):
-    Component = apps.get_model("component", "BomComponent")
+    BomComponent = apps.get_model("component", "BomComponent")
+    Department = apps.get_model("user", "Department")
     BOMdf = pd.read_excel(os.path.join(script_dir, "..", "data", "EBOM.xlsx"))
     for index, row in BOMdf.iterrows():
-        Component.objects.create(
+        # designing_responsible_department = Department.objects.get(name__icontains=row["Designing Responsible Department"].replace(" ", ""))
+        # manufacturing_responsible_department = Department.objects.get(name__icontains=row[
+        #         "Manufacturing Responsible Department"
+        #     ].replace(" ", ""))
+        BomComponent.objects.create(
             revision=row["REVISION"],
             ID=row["ID"],
             P_on_N_status_code=row["P/N Status Code"],
@@ -74,64 +79,63 @@ def create_default_group(apps, schema_editor):
             EBOM=row["EBOM"],
         )
 
-    instances = []
-    random_numbers = [random.randint(1, 1000) for _ in range(15000)]
-
-    for i in range(15000):
-        instance = Component(
-            revision=random_numbers[i],
-            ID=random_numbers[i],
-            P_on_N_status_code=random_numbers[i],
-            fig_no=random_numbers[i],
-            item_no=random_numbers[i],
-            module=random_numbers[i],
-            level=random_numbers[i],
-            code=random_numbers[i],
-            parent_code=random_numbers[i],
-            part_number=random_numbers[i],
-            description=random_numbers[i],
-            comment=random_numbers[i],
-            sap_name=random_numbers[i],
-            unit_per_assy=random_numbers[i],
-            unit_per_end_item=random_numbers[i],
-            corrected_units_per_end_item=random_numbers[i],
-            gg_qty=random_numbers[i],
-            srp=random_numbers[i],
-            store_comment=random_numbers[i],
-            assembly=True,
-            standard_part=False,
-            material=random_numbers[i],
-            mfg_complexity_level=random_numbers[i],
-            disassembled=random_numbers[i],
-            supplying_or_manufacturing=random_numbers[i],
-            internal_or_external_outsourcing=random_numbers[i],
-            vendor=random_numbers[i],
-            joining=random_numbers[i],
-            manufacturing_process=random_numbers[i],
-            raw_material_form=random_numbers[i],
-            function=random_numbers[i],
-            qc_criteria=random_numbers[i],
-            manufacturing_priority=random_numbers[i],
-            manufacturing_responsible_department=random_numbers[i],
-            designing_responsible_department=random_numbers[i],
-            usage_on_other_engines=random_numbers[i],
-            manufacturing_parts_category=random_numbers[i],
-            scope_matrix_category=random_numbers[i],
-            requires_manufacturing_or_supplying_for_reassembly=random_numbers[i],
-            system_D_requirements=random_numbers[i],
-            percurment_state=random_numbers[i],
-            details=random_numbers[i],
-            joint_type=random_numbers[i],
-            discarded_during_disassembly=random_numbers[i],
-            expendables=True,
-            discarded_or_unusable_according_to_docs=random_numbers[i],
-            destroyed_for_analysis=random_numbers[i],
-            rejected_by_qc_or_inspection=random_numbers[i],
-            class_size_or_weight_as_required=random_numbers[i],
-            EBOM=random_numbers[i],
-        )
-        instances.append(instance)
-    Component.objects.bulk_create(instances)
+    # instances = []
+    # random_numbers = [random.randint(1, 1000) for _ in range(15000)]
+    # for i in range(15000):
+    #     instance = BomComponent(
+    #         revision=random_numbers[i],
+    #         ID=random_numbers[i],
+    #         P_on_N_status_code=random_numbers[i],
+    #         fig_no=random_numbers[i],
+    #         item_no=random_numbers[i],
+    #         module=random_numbers[i],
+    #         level=random_numbers[i],
+    #         code=random_numbers[i],
+    #         parent_code=random_numbers[i],
+    #         part_number=random_numbers[i],
+    #         description=random_numbers[i],
+    #         comment=random_numbers[i],
+    #         sap_name=random_numbers[i],
+    #         unit_per_assy=random_numbers[i],
+    #         unit_per_end_item=random_numbers[i],
+    #         corrected_units_per_end_item=random_numbers[i],
+    #         gg_qty=random_numbers[i],
+    #         srp=random_numbers[i],
+    #         store_comment=random_numbers[i],
+    #         assembly=True,
+    #         standard_part=False,
+    #         material=random_numbers[i],
+    #         mfg_complexity_level=random_numbers[i],
+    #         disassembled=random_numbers[i],
+    #         supplying_or_manufacturing=random_numbers[i],
+    #         internal_or_external_outsourcing=random_numbers[i],
+    #         vendor=random_numbers[i],
+    #         joining=random_numbers[i],
+    #         manufacturing_process=random_numbers[i],
+    #         raw_material_form=random_numbers[i],
+    #         function=random_numbers[i],
+    #         qc_criteria=random_numbers[i],
+    #         manufacturing_priority=random_numbers[i],
+    #         manufacturing_responsible_department=random_numbers[i],
+    #         designing_responsible_department=random_numbers[i],
+    #         usage_on_other_engines=random_numbers[i],
+    #         manufacturing_parts_category=random_numbers[i],
+    #         scope_matrix_category=random_numbers[i],
+    #         requires_manufacturing_or_supplying_for_reassembly=random_numbers[i],
+    #         system_D_requirements=random_numbers[i],
+    #         percurment_state=random_numbers[i],
+    #         details=random_numbers[i],
+    #         joint_type=random_numbers[i],
+    #         discarded_during_disassembly=random_numbers[i],
+    #         expendables=True,
+    #         discarded_or_unusable_according_to_docs=random_numbers[i],
+    #         destroyed_for_analysis=random_numbers[i],
+    #         rejected_by_qc_or_inspection=random_numbers[i],
+    #         class_size_or_weight_as_required=random_numbers[i],
+    #         EBOM=random_numbers[i],
+    #     )
+    #     instances.append(instance)
+    # BomComponent.objects.bulk_create(instances)
 
 
 class Migration(migrations.Migration):

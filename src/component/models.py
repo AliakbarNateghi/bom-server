@@ -1,10 +1,10 @@
 from django.contrib.auth.models import Group
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
 from jalali_date.fields import JalaliDateField
 
 from ..core.models import BomBaseModel
-from ..user.models import Department, BomUser
+from ..user.models import BomUser, Department
 
 PERCENTAGE_VALIDATOR = [MinValueValidator(0), MaxValueValidator(100)]
 
@@ -124,26 +124,27 @@ class BomComponent(BomBaseModel):
     function = models.CharField(max_length=64, null=True, blank=True)
     qc_criteria = models.CharField(max_length=32, null=True, blank=True)
     manufacturing_priority = models.CharField(max_length=64, null=True, blank=True)
-    # manufacturing_responsible_department = models.CharField(
-    #     max_length=16, null=True, blank=True
-    # )  # relational to user groups
-    # designing_responsible_department = models.CharField(
-    #     max_length=32, null=True, blank=True
+    manufacturing_responsible_department = models.CharField(
+        max_length=16, null=True, blank=True
+    )  # relational to user departments
+    designing_responsible_department = models.CharField(
+        max_length=32, null=True, blank=True
+    )  # relational to user departments
+
+    # manufacturing_responsible_department = models.ForeignKey(
+    #     Department,
+    #     null=True,
+    #     blank=True,
+    #     on_delete=models.CASCADE,
+    #     related_name="manufacturing_responsible_department",
     # )
-    manufacturing_responsible_department = models.ForeignKey(
-        Department,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        related_name="manufacturing_responsible_department",
-    )
-    designing_responsible_department = models.ForeignKey(
-        Department,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        related_name="designing_responsible_department",
-    )
+    # designing_responsible_department = models.ForeignKey(
+    #     Department,
+    #     null=True,
+    #     blank=True,
+    #     on_delete=models.CASCADE,
+    #     related_name="designing_responsible_department",
+    # )
     usage_on_other_engines = models.CharField(max_length=64, null=True, blank=True)
     manufacturing_parts_category = models.CharField(
         max_length=64, null=True, blank=True
@@ -260,7 +261,7 @@ class ProvideComponent(BomBaseModel):
     ]
     application_type = models.CharField(
         null=True, blank=True, choices=APPLICATION_TYPE_CHOISE, max_length=32
-    ) # نوع درخواست
+    )  # نوع درخواست
 
     # SUPPLY_STAGE_CHOISE = [
     #     ("find_contractors_and_qualifications", "find_contractors_and_qualifications"),
@@ -310,7 +311,7 @@ class ProvideComponent(BomBaseModel):
         ("تحويل گرديد", "تحويل گرديد"),
         ("حذف شد", "حذف شد"),
         ("دريافت تضامين", "دريافت تضامين"),
-        (" ارجاع به مالي", " ارجاع به مالي"),
+        ("ارجاع به مالي", "ارجاع به مالي"),
     ]
     supply_stage = models.TextField(
         null=True, blank=True, max_length=512, choices=SUPPLY_STAGE_CHOISE
@@ -339,13 +340,26 @@ class ProvideComponent(BomBaseModel):
     ]
     request_type = models.CharField(
         null=True, blank=True, max_length=128, choices=REQUEST_TYPE_CHOISE
-    ) # جنس درخواست
-    customer_management = models.ForeignKey(
-        Department,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        related_name="customer_management",
+    )  # جنس درخواست
+
+    # customer_management = models.ForeignKey(
+    #     Department,
+    #     null=True,
+    #     blank=True,
+    #     on_delete=models.CASCADE,
+    #     related_name="customer_management",
+    # )
+    CUSTOMER_MANAGEMENT_CHOISE = [
+        ("فن و کمپرسور", "فن و کمپرسور"),
+        ("جانبی", "جانبی"),
+        ("توربین", "توربین"),
+        ("ماینور پارت", "ماینور پارت"),
+        ("محفظه احتراق", "محفظه احتراق"),
+        ("طراحي سازه موتور", "طراحي سازه موتور"),
+        ("استاندارد و كيفيت", "استاندارد و كيفيت"),
+    ]
+    customer_management = models.CharField(
+        null=True, blank=True, max_length=128, choices=CUSTOMER_MANAGEMENT_CHOISE
     )
     contract_number = models.BigIntegerField(null=True, blank=True)
     supplier = models.CharField(null=True, blank=True, max_length=64)
@@ -366,9 +380,24 @@ class ProvideComponent(BomBaseModel):
         ("يوان", "يوان"),
         ("درهم", "درهم"),
     ]
-    currency = models.CharField(null=True, blank=True, max_length=16, choices=CURRENCY_CHOISE)
-    expert = models.ForeignKey(BomUser, null=True, blank=True, on_delete=models.CASCADE)
-    prepayment_percentage = models.IntegerField(validators=PERCENTAGE_VALIDATOR, null=True, blank=True)
+    currency = models.CharField(
+        null=True, blank=True, max_length=16, choices=CURRENCY_CHOISE
+    )
+
+    # expert = models.ForeignKey(BomUser, null=True, blank=True, on_delete=models.CASCADE)
+    EXPERT_CHOISE = [
+        ("غنی آبادی", "غنی آبادی"),
+        ("محمد زاده", "محمد زاده"),
+        ("روشن دل", "روشن دل"),
+    ]
+    expert = models.CharField(
+        null=True, blank=True, max_length=64, choices=EXPERT_CHOISE
+    )
+
+    prepayment_percentage = models.IntegerField(
+        validators=PERCENTAGE_VALIDATOR, null=True, blank=True
+    )
+    currency_type = models.CharField(null=True, blank=True, max_length=64)
     prepayment_according_to_contract = models.BigIntegerField(null=True, blank=True)
 
     """
@@ -405,36 +434,64 @@ class ProvideComponent(BomBaseModel):
 
 class ProvideFieldPermission(models.Model):
     instance_id = models.IntegerField(null=True, blank=True)
+    # FIELD_CHOISES = [
+    #     ("نوع درخواست (گزارش خريد/قرارداد)", "نوع درخواست (گزارش خريد/قرارداد)"),
+    #     ("مرحله تامين", "مرحله تامين"),
+    #     ("تامين كننده متريال", "تامين كننده متريال"),
+    #     ("شماره PR", "شماره PR"),
+    #     ("شماره PO", "شماره PO"),
+    #     ("موضوع", "موضوع"),
+    #     ("جنس درخواست", "جنس درخواست"),
+    #     ("مديريت سفارش دهنده", "مديريت سفارش دهنده"),
+    #     ("شماره قرارداد", "شماره قرارداد"),
+    #     ("تامين كننده", "تامين كننده"),
+    #     ("مبلغ", "مبلغ"),
+    #     ("مبلغ تعديل", "مبلغ تعديل"),
+    #     (" جمع مبلغ ", " جمع مبلغ "),
+    #     ("نوع ارز", "نوع ارز"),
+    #     ("كارشناس مسئول", "كارشناس مسئول"),
+    #     ("درصد پيش‌پرداخت", "درصد پيش‌پرداخت"),
+    #     ("مبلغ پيش‌پرداخت طبق قرارداد", "مبلغ پيش‌پرداخت طبق قرارداد"),
+    #     ("پيش پرداخت توسط توگا", "پيش پرداخت توسط توگا"),
+    #     ("پيش پرداخت توسط موتور هوايي", "پيش پرداخت توسط موتور هوايي"),
+    #     (" جمع پيش پرداخت ها- ريالي ", " جمع پيش پرداخت ها- ريالي "),
+    #     (" چك تضمين پيش پرداخت ", " چك تضمين پيش پرداخت "),
+    #     (" ضمانتنامه پيش پرداخت ", " ضمانتنامه پيش پرداخت "),
+    #     (" ضمانت نامه سند رهني ", " ضمانت نامه سند رهني "),
+    #     (" جمع ضمانت نامه هاي پيش پرداخت ", " جمع ضمانت نامه هاي پيش پرداخت "),
+    #     ("وضعيت در معاونت مالي", "وضعيت در معاونت مالي"),
+    #     ("تاريخ درخواست پيش پرداخت", "تاريخ درخواست پيش پرداخت"),
+    #     ("مبلغ پيش پرداخت", "مبلغ پيش پرداخت"),
+    #     ("نوع ارز", "نوع ارز"),
+    #     ("تاريخ پرداخت پيش پرداخت", "تاريخ پرداخت پيش پرداخت"),
+    # ]
     FIELD_CHOISES = [
-        ("نوع درخواست (گزارش خريد/قرارداد)", "نوع درخواست (گزارش خريد/قرارداد)"),
-        ("مرحله تامين", "مرحله تامين"),
-        ("تامين كننده متريال", "تامين كننده متريال"),
-        ("شماره PR", "شماره PR"),
-        ("شماره PO", "شماره PO"),
-        ("موضوع", "موضوع"),
-        ("جنس درخواست", "جنس درخواست"),
-        ("مديريت سفارش دهنده", "مديريت سفارش دهنده"),
-        ("شماره قرارداد", "شماره قرارداد"),
-        ("تامين كننده", "تامين كننده"),
-        ("مبلغ", "مبلغ"),
-        ("مبلغ تعديل", "مبلغ تعديل"),
-        (" جمع مبلغ ", " جمع مبلغ "),
-        ("نوع ارز", "نوع ارز"),
-        ("كارشناس مسئول", "كارشناس مسئول"),
-        ("درصد پيش‌پرداخت", "درصد پيش‌پرداخت"),
-        ("مبلغ پيش‌پرداخت طبق قرارداد", "مبلغ پيش‌پرداخت طبق قرارداد"),
-        ("پيش پرداخت توسط توگا", "پيش پرداخت توسط توگا"),
-        ("پيش پرداخت توسط موتور هوايي", "پيش پرداخت توسط موتور هوايي"),
-        (" جمع پيش پرداخت ها- ريالي ", " جمع پيش پرداخت ها- ريالي "),
-        (" چك تضمين پيش پرداخت ", " چك تضمين پيش پرداخت "),
-        (" ضمانتنامه پيش پرداخت ", " ضمانتنامه پيش پرداخت "),
-        (" ضمانت نامه سند رهني ", " ضمانت نامه سند رهني "),
-        (" جمع ضمانت نامه هاي پيش پرداخت ", " جمع ضمانت نامه هاي پيش پرداخت "),
-        ("وضعيت در معاونت مالي", "وضعيت در معاونت مالي"),
-        ("تاريخ درخواست پيش پرداخت", "تاريخ درخواست پيش پرداخت"),
-        ("مبلغ پيش پرداخت", "مبلغ پيش پرداخت"),
-        ("نوع ارز", "نوع ارز"),
-        ("تاريخ پرداخت پيش پرداخت", "تاريخ پرداخت پيش پرداخت"),
+        ("application_type", "application_type"),
+        ("supply_stage", "supply_stage"),
+        ("material_supplier", "material_supplier"),
+        ("pr", "pr"),
+        ("po", "po"),
+        ("subject", "subject"),
+        ("request_type", "request_type"),
+        ("customer_management", "customer_management"),
+        ("contract_number", "contract_number"),
+        ("supplier", "supplier"),
+        ("amount", "amount"),
+        ("adjustment_amount", "adjustment_amount"),
+        ("currency", "currency"),
+        ("expert", "expert"),
+        ("prepayment_percentage", "prepayment_percentage"),
+        ("currency_type", "currency_type"),
+        ("prepayment_according_to_contract", "prepayment_according_to_contract"),
+        ("prepaid_by_toga", "prepaid_by_toga"),
+        ("prepaid_by_air_engine", "prepaid_by_air_engine"),
+        ("prepayment_guarantee_check", "prepayment_guarantee_check"),
+        ("prepayment_guarantee", "prepayment_guarantee"),
+        ("mortgage_document_guarantee", "mortgage_document_guarantee"),
+        ("financial_situation", "financial_situation"),
+        ("prepayment_request_date", "prepayment_request_date"),
+        ("prepayment_amount", "prepayment_amount"),
+        ("prepayment_date", "prepayment_date"),
     ]
     field = models.CharField(
         max_length=128, null=True, blank=True, choices=FIELD_CHOISES

@@ -1,10 +1,16 @@
 from rest_framework import serializers
 
-from .models import BomComponent, FieldPermission
+from .models import (
+    BomComponent, 
+    BomFieldPermission, 
+    ProvideComponent, 
+    ProvideFieldPermission,
+)
 
 
-class ComponentSerializer(serializers.ModelSerializer):
+class BomComponentSerializer(serializers.ModelSerializer):
     class Meta:
+        depth = 1
         model = BomComponent
         # fields = "__all__"
         exclude = [
@@ -15,9 +21,28 @@ class ComponentSerializer(serializers.ModelSerializer):
         ]
 
 
-class FieldPermissionSerializer(serializers.ModelSerializer):
+class ProvideComponentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FieldPermission
+        model = ProvideComponent
+        # fields = "__all__"
+        exclude = [
+            # 'id',
+            "deleted",
+            "deletable",
+            # 'editable',
+        ]
+
+
+class BomFieldPermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BomFieldPermission
+        fields = ["group", "field", "instance_id", "editable"]
+        # fields = "__all__"
+
+
+class ProvideFieldPermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProvideFieldPermission
         fields = ["group", "field", "instance_id", "editable"]
         # fields = "__all__"
 

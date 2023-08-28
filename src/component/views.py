@@ -3,6 +3,7 @@ import re
 
 from django.contrib.auth.models import Group
 from django.core.paginator import Paginator
+from django.core import serializers
 from django.db.models import Prefetch, Q
 from django.http import QueryDict
 from rest_framework import status
@@ -15,10 +16,18 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet, mixins
 from ..core.paginations import CustomCursorPagination, CustomPageNumberPagination
 from ..core.permissions import IsGod
 from ..core.versatile_funcs import compare_instance_with_dict
-from .models import BomComponent, FieldPermission
+from ..user.models import Department
+from .models import (
+    BomComponent,
+    BomFieldPermission,
+    ProvideComponent,
+    ProvideFieldPermission,
+)
 from .serializers import (
-    ComponentSerializer,
-    FieldPermissionSerializer,
+    BomComponentSerializer,
+    BomFieldPermissionSerializer,
+    ProvideComponentSerializer,
+    ProvideFieldPermissionSerializer,
     MassPermissionSerializer,
 )
 
@@ -27,18 +36,42 @@ from .serializers import (
 #     'page_number': CustomPageNumberPagination,
 # }
 
+def find_permission_model(kwargs):
+        if kwargs == 'bom':
+            return BomFieldPermission.objects.all()
+        elif kwargs == 'provide':
+            return ProvideFieldPermission.objects.all()
+        
+def find_component_model(kwargs):
+        if kwargs == 'bom':
+            return BomComponent.objects.all()
+        elif kwargs == 'provide':
+            return ProvideComponent.objects.all()
 
 class Component(ModelViewSet):
-    queryset = BomComponent.objects.all()
-    serializer_class = ComponentSerializer
+    # queryset = BomComponent.objects.all()
+    # serializer_class = ComponentSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = CustomCursorPagination
+    
+
+    def get_queryset(self):
+        if self.kwargs['table'] == 'bom':
+            return BomComponent.objects.all()
+        elif self.kwargs['table'] == 'provide':
+            return ProvideComponent.objects.all()
+
+    def get_serializer_class(self):
+        if self.kwargs['table'] == 'bom':
+            return BomComponentSerializer
+        elif self.kwargs['table'] == 'provide':
+            return ProvideComponentSerializer
 
     """
         page number pagination
     """
-
     def list(self, request, *args, **kwargs):
+        permission_model = find_permission_model(self.kwargs['table'])
         user = self.request.user
         groups = user.groups.all()
         page = (
@@ -48,37 +81,37 @@ class Component(ModelViewSet):
         )
         page = int(page[0]) if page else 0
 
-        instances = FieldPermission.objects.filter(group__in=groups).order_by(
+        instances = permission_model.filter(group__in=groups).order_by(
             "instance_id"
         )
         paginator = Paginator(
-            instances.values_list("instance_id", flat=True).distinct(), 15
+            instances.values_list("instance_id", flat=True).distinct(), 100
         )
         instance_ids = paginator.get_page(page)
-        print(f"instance_ids : {instance_ids}")
         instances = instances.filter(instance_id__in=instance_ids)
-
-        queryset = self.queryset.filter(id__in=instance_ids)
+        raw_queryset = self.get_queryset()
+        queryset = raw_queryset.filter(id__in=instance_ids)
         queryset_dict = {}
         editable_dict = {}
         for instance in instances:
             id = instance.instance_id
             field = instance.field
-            print(f"field : {field}")
             editable = instance.editable
             try:
                 if id not in queryset_dict:
                     obj = queryset.get(id=id)
                     queryset_dict[id] = {"id": id}
                     editable_dict[id] = {"id": id}
-                queryset_dict[id][field] = getattr(obj, field) if field else None
+                queryset_dict[id][field] = json.loads(serializers.serialize('json', [getattr(obj, field), ]))[0]["fields"]["name"] if type(getattr(obj, field)) == Department else getattr(obj, field)
+                # queryset_dict[id][field] = getattr(obj, field)
                 editable_dict[id][field] = editable
-            except BomComponent.DoesNotExist:
+            except queryset.model.DoesNotExist:
                 pass
 
         response_data = {
             "querysets": list(queryset_dict.values()),
             "editables": list(editable_dict.values()),
+            "count": raw_queryset.count()
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
@@ -99,15 +132,14 @@ class Component(ModelViewSet):
     #         queryset_dict = {}
     #         for instance in instances:
     #             id = instance.instance_id
-    #             obj = queryset.get(id=id)
     #             field = instance.field
-    #             field_value = getattr(obj, field)
     #             try:
     #                 if id not in queryset_dict:
+    #                     obj = queryset.get(id=id)
     #                     queryset_dict[id] = {
     #                         "id": id,
     #                     }
-    #                 queryset_dict[id][field] = field_value
+    #                 queryset_dict[id][field] = getattr(obj, field)
     #             except BomComponent.DoesNotExist:
     #                 pass
 
@@ -115,16 +147,18 @@ class Component(ModelViewSet):
 
     #     return Response([], status=status.HTTP_200_OK)
 
-    def partial_update(self, request, pk=None):
+    def partial_update(self, request, pk=None, **kwargs):
+        permission_model = find_permission_model(self.kwargs['table'])
         user = request.user
         groups = user.groups.all()
-        obj = BomComponent.objects.get(id=pk)
+        queryset = self.get_queryset()
+        obj = queryset.get(id=pk)
         initial_obj = obj
         json_dict = request.data
-        instances = FieldPermission.objects.filter(
+        instances = permission_model.filter(
             group__in=groups, editable=True, instance_id=pk
         )
-        notEditable_instances = FieldPermission.objects.filter(
+        notEditable_instances = permission_model.filter(
             group__in=groups, editable=False, instance_id=pk
         )
         if not instances:
@@ -145,10 +179,10 @@ class Component(ModelViewSet):
                 id = instance.instance_id
                 try:
                     if id not in queryset_dict:
-                        obj = BomComponent.objects.get(id=pk)
+                        obj = queryset.get(id=pk)
                         queryset_dict[id] = {"id": id}
                     queryset_dict[id][field_name] = getattr(obj, field_name)
-                except BomComponent.DoesNotExist:
+                except queryset.model.DoesNotExist:
                     pass
             queryset_list = list(queryset_dict.values())
             false_type_response = {"message": "type", "data": queryset_list}
@@ -159,10 +193,10 @@ class Component(ModelViewSet):
             id = instance.instance_id
             try:
                 if id not in queryset_dict:
-                    obj = BomComponent.objects.get(id=pk)
+                    obj = queryset.get(id=pk)
                     queryset_dict[id] = {"id": id}
                 queryset_dict[id][field_name] = getattr(obj, field_name)
-            except BomComponent.DoesNotExist:
+            except queryset.model.DoesNotExist:
                 pass
         queryset_list = list(queryset_dict.values())
         updated_keys = [
@@ -192,9 +226,21 @@ class Component(ModelViewSet):
 
 
 class FieldPermissionView(ModelViewSet):
-    queryset = FieldPermission.objects.all()
-    serializer_class = FieldPermissionSerializer
+    # queryset = FieldPermission.objects.all()
+    # serializer_class = FieldPermissionSerializer
     permission_classes = [IsAuthenticated, IsGod, IsAdminUser]
+    def get_queryset(self):
+        if self.kwargs['table'] == 'bom':
+            return BomFieldPermission.objects.all()
+        elif self.kwargs['table'] == 'provide':
+            return ProvideFieldPermission.objects.all()
+
+    def get_serializer_class(self):
+        if self.kwargs['table'] == 'bom':
+            print
+            return BomFieldPermissionSerializer
+        elif self.kwargs['table'] == 'provide':
+            return ProvideFieldPermissionSerializer
 
     def list(self, request, *args, **kwargs):
         group = (
@@ -210,10 +256,10 @@ class FieldPermissionView(ModelViewSet):
             else ""
         )
         page = int(page[0]) if page else 0
-
-        instances = self.queryset.filter(group__id=group).order_by("instance_id")
+        queryset = self.get_queryset()
+        instances = queryset.filter(group__id=group).order_by("instance_id")
         paginator = Paginator(
-            instances.values_list("instance_id", flat=True).distinct(), 15
+            instances.values_list("instance_id", flat=True).distinct(), 100
         )
         instance_ids = paginator.get_page(page)
         instances = instances.filter(instance_id__in=instance_ids)
@@ -227,14 +273,21 @@ class FieldPermissionView(ModelViewSet):
                 editable_dict[id][instance.field] = instance.editable
             except:
                 pass
+        
+        component = find_component_model(self.kwargs["table"])
+        response_data = {
+            "editables": list(editable_dict.values()),
+            "count": component.count()
+        }
 
-        return Response(list(editable_dict.values()), status=status.HTTP_200_OK)
+        return Response(response_data, status=status.HTTP_200_OK)
 
-    def create(self, request):
+    def create(self, request, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        permissions = self.queryset.filter(
+        queryset = self.get_queryset()
+        permissions = queryset.filter(
             instance_id=self.instance_id, group=self.group
         )
         editable_dict = {}
@@ -252,10 +305,11 @@ class FieldPermissionView(ModelViewSet):
         return Response(list(editable_dict.values()), status=status.HTTP_200_OK)
 
     def perform_create(self, serializer):
-        self.group = serializer.validated_data["group"]
-        self.field = serializer.validated_data["field"]
-        self.instance_id = serializer.validated_data["instance_id"]
-        instance = self.queryset.filter(
+        self.group = serializer.validated_data.get("group")
+        self.field = serializer.validated_data.get("field")
+        self.instance_id = serializer.validated_data.get("instance_id")
+        queryset = self.get_queryset()
+        instance = queryset.filter(
             group=self.group,
             field=self.field,
             instance_id=self.instance_id,
@@ -268,59 +322,53 @@ class FieldPermissionView(ModelViewSet):
         instance_id = kwargs["pk"]
         field = request.GET.get("field")
         group = request.GET.get("group")
-        # try:
-        instance = self.queryset.filter(
+        queryset = self.get_queryset()
+        instance = queryset.filter(
             group__id=group,
             instance_id=instance_id,
             field=field,
         ).first()
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-        # except:
-        #     return Response({"message": "Can't delete the item"})
-
-        # instances = self.queryset.filter(
-        #     group__id=group,
-        #     instance_id=instance_id
-        # )
-        # editable_dict = {}
-        # for instance in instances:
-        #     id = instance.instance_id
-        #     field = instance.field
-        #     editable = instance.editable
-        #     try:
-        #         if id not in editable_dict:
-        #             editable_dict[id] = {"id": id}
-        #         editable_dict[id][field] = editable
-        #     except:
-        #         pass
-
-        # return Response(list(editable_dict.values()), status=status.HTTP_200_OK)
 
 
 class MassPermissionViewSet(
     mixins.CreateModelMixin,
     GenericViewSet,
 ):
-    queryset = FieldPermission.objects.all()
+    # queryset = FieldPermission.objects.all()
     serializer_class = MassPermissionSerializer
+    def get_queryset(self):
+        if self.kwargs['table'] == 'bom':
+            return BomFieldPermission.objects.all()
+        elif self.kwargs['table'] == 'provide':
+            return ProvideFieldPermission.objects.all()
+
+    # def get_serializer_class(self):
+    #     if self.kwargs['table'] == 'bom':
+    #         return BomComponentSerializer
+    #     elif self.kwargs['table'] == 'provide':
+    #         return ProvideComponentSerializer
     permission_classes = [IsAuthenticated, IsGod, IsAdminUser]
 
     def create(self, request, *args, **kwargs):
+        component = find_component_model(self.kwargs["table"])
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         field = serializer.validated_data["field"]
         group = serializer.validated_data["group"]
         editable = serializer.validated_data.get("editable")
-        self.queryset.filter(field=field, group=group).delete()
+        queryset = self.get_queryset()
+        queryset.filter(field=field, group=group).delete()
         if editable != None:
             group = Group.objects.get(id=group)
-            count = BomComponent.objects.count()
+            count = component.count()
+            print(count)
             instances = [
-                FieldPermission(
+                queryset.model(
                     instance_id=instance_id, field=field, group=group, editable=editable
                 )
                 for instance_id in range(1, count+1)
             ]
-            self.queryset.bulk_create(instances)
+            queryset.bulk_create(instances)
         return Response({"message": "Done"})

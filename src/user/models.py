@@ -4,6 +4,22 @@ from django.utils.translation import gettext_lazy as _
 
 from ..core.models import BomBaseModel
 
+class Department(models.Model):
+    # NAME_CHOISE = [
+    #     ("کمپرسور", "کمپرسور"),
+    #     ("فن و کمپرسور", "فن و کمپرسور"),
+    #     ("جانبی", "جانبی"),
+    #     ("توربین", "توربین"),
+    #     ("ماینور پارت", "ماینور پارت"),
+    #     ("محفظه احتراق", "محفظه احتراق"),
+    #     ("طراحي سازه موتور", "طراحي سازه موتور"),
+    #     ("استاندارد و كيفيت", "استاندارد و كيفيت"),
+    # ]
+    name = models.CharField(null=True, blank=True, max_length=64)
+
+    def __str__(self):
+        return self.name
+    
 
 class BomUser(AbstractUser):
     # avatar = models.ImageField(

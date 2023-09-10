@@ -1,48 +1,55 @@
 import os
 import random
-import numpy as np
 
+import numpy as np
 import pandas as pd
 from django.db import migrations
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+def check_NaN(var):
+    return None if pd.isna(var) else var
+
 
 def create_default_group(apps, schema_editor):
     BomComponent = apps.get_model("component", "BomComponent")
     # Department = apps.get_model("user", "Department")
     ProvideComponent = apps.get_model("component", "ProvideComponent")
     PROVIDEdf = pd.read_excel(os.path.join(script_dir, "..", "data", "provide.xlsx"))
-    PROVIDEdf = PROVIDEdf.fillna(value=0)
+    # PROVIDEdf = PROVIDEdf.fillna(value=0)
     BOMdf = pd.read_excel(os.path.join(script_dir, "..", "data", "EBOM.xlsx"))
-    BOMdf = BOMdf.fillna(value=0)
+    # BOMdf = BOMdf.fillna(value=0)
 
     # .iloc[1:]
     # designing_responsible_department = Department.objects.get(name__icontains=row["Designing Responsible Department"].replace(" ", ""))
-        # manufacturing_responsible_department = Department.objects.get(name__icontains=row[
-        #         "Manufacturing Responsible Department"
-        #     ].replace(" ", ""))
+    # manufacturing_responsible_department = Department.objects.get(name__icontains=row[
+    #         "Manufacturing Responsible Department"
+    #     ].replace(" ", ""))
 
     bom_components = []
     for index, row in BOMdf.iterrows():
         bom_components.append(
             BomComponent(
-                revision=row["REVISION"],
-                ID=row["ID"],
-                P_on_N_status_code=row["P/N Status Code"],
+                revision=check_NaN(row["REVISION"]),
+                ID=check_NaN(row["ID"]),
+                P_on_N_status_code=check_NaN(row["P/N Status Code"]),
                 fig_no=row["Fig. No."],
-                item_no=row["Item No."],
+                item_no=check_NaN(row["Item No."]),
                 module=row["Module"],
-                level=row["Level"],
+                level=check_NaN(row["Level"]),
                 code=row["Code"],
                 parent_code=row["Parent Code"],
                 part_number=row["Part Number"],
                 description=row["Description"],
                 comment=row["Comment"],
                 sap_name=row["SAP NAME"],
-                unit_per_assy=row["Units Per Assy"],
-                unit_per_end_item=row["Units Per End Item"],
-                corrected_units_per_end_item=row["Corrected Units Per End Item"],
-                gg_qty=row["GG QTY"],
+                unit_per_assy=check_NaN(row["Units Per Assy"]),
+                unit_per_end_item=check_NaN(row["Units Per End Item"]),
+                corrected_units_per_end_item=check_NaN(
+                    row["Corrected Units Per End Item"]
+                ),
+                gg_qty=check_NaN(row["GG QTY"]),
                 srp=row["SRP"],
                 store_comment=row["Store Comment"],
                 assembly=True if row["Assembly"] == "yes" else False,
@@ -62,7 +69,9 @@ def create_default_group(apps, schema_editor):
                 manufacturing_responsible_department=row[
                     "Manufacturing Responsible Department"
                 ],
-                designing_responsible_department=row["Designing Responsible Department"],
+                designing_responsible_department=row[
+                    "Designing Responsible Department"
+                ],
                 usage_on_other_engines=row["USAGE ON OTHER ENGINES"],
                 manufacturing_parts_category=row["MANUFACTURING PARTS Category"],
                 scope_matrix_category=row["Scope Matrix Category"],
@@ -81,7 +90,7 @@ def create_default_group(apps, schema_editor):
                 destroyed_for_analysis=row["Destroyed For Analysis"],
                 rejected_by_qc_or_inspection=row["Rejected by QC/Inspection"],
                 class_size_or_weight_as_required=row["Class Size/Weight As Required"],
-                EBOM=row["EBOM"],
+                EBOM=check_NaN(row["EBOM"]),
             )
         )
     BomComponent.objects.bulk_create(bom_components)
@@ -90,32 +99,34 @@ def create_default_group(apps, schema_editor):
     for index, row in PROVIDEdf.iterrows():
         provide_components.append(
             ProvideComponent(
-                application_type=row["نوع درخواست (گزارش خريد/قرارداد)"],
-                supply_stage=row["مرحله تامين"],
-                material_supplier=row["تامين كننده متريال"],
-                pr=row["شماره PR"],
-                po=row["شماره PO"],
-                subject=row["موضوع"],
-                request_type=row["جنس درخواست"],
-                customer_management=row["مديريت سفارش دهنده"],
-                contract_number=row["شماره قرارداد"],
-                supplier=row["تامين كننده"],
-                amount=row["مبلغ"],
-                adjustment_amount=row["مبلغ تعديل"],
-                currency=row["نوع ارز"],
-                expert=row["كارشناس مسئول"],
-                prepayment_percentage=row["درصد پيش‌پرداخت"],
-                currency_type=row["نوع ارز"],
-                prepayment_according_to_contract=row["مبلغ پيش‌پرداخت طبق قرارداد"],
-                prepaid_by_toga=row["پيش پرداخت توسط توگا"],
-                prepaid_by_air_engine=row["پيش پرداخت توسط موتور هوايي"],
-                prepayment_guarantee_check=row["چك تضمين پيش پرداخت"],
-                prepayment_guarantee=row["ضمانتنامه پيش پرداخت"],
-                mortgage_document_guarantee=row["ضمانت نامه سند رهني"],
-                financial_situation=row["وضعيت در معاونت مالي"],
-                prepayment_request_date=row["تاريخ درخواست پيش پرداخت"],
-                prepayment_amount=row["مبلغ پيش پرداخت"],
-                prepayment_date=row["تاريخ پرداخت پيش پرداخت"],
+                application_type=check_NaN(row["نوع درخواست (گزارش خريد/قرارداد)"]),
+                supply_stage=check_NaN(row["مرحله تامين"]),
+                material_supplier=check_NaN(row["تامين كننده متريال"]),
+                pr=check_NaN(row["شماره PR"]),
+                po=check_NaN(row["شماره PO"]),
+                subject=check_NaN(row["موضوع"]),
+                request_type=check_NaN(row["جنس درخواست"]),
+                customer_management=check_NaN(row["مديريت سفارش دهنده"]),
+                contract_number=check_NaN(row["شماره قرارداد"]),
+                supplier=check_NaN(row["تامين كننده"]),
+                amount=check_NaN(row["مبلغ"]),
+                adjustment_amount=check_NaN(row["مبلغ تعديل"]),
+                currency=check_NaN(row["نوع ارز"]),
+                expert=check_NaN(row["كارشناس مسئول"]),
+                prepayment_percentage=check_NaN(row["درصد پيش‌پرداخت"]),
+                currency_type=check_NaN(row["نوع ارز"]),
+                prepayment_according_to_contract=check_NaN(
+                    row["مبلغ پيش‌پرداخت طبق قرارداد"]
+                ),
+                prepaid_by_toga=check_NaN(row["پيش پرداخت توسط توگا"]),
+                prepaid_by_air_engine=check_NaN(row["پيش پرداخت توسط موتور هوايي"]),
+                prepayment_guarantee_check=check_NaN(row["چك تضمين پيش پرداخت"]),
+                prepayment_guarantee=check_NaN(row["ضمانتنامه پيش پرداخت"]),
+                mortgage_document_guarantee=check_NaN(row["ضمانت نامه سند رهني"]),
+                financial_situation=check_NaN(row["وضعيت در معاونت مالي"]),
+                prepayment_request_date=check_NaN(row["تاريخ درخواست پيش پرداخت"]),
+                prepayment_amount=check_NaN(row["مبلغ پيش پرداخت"]),
+                prepayment_date=check_NaN(row["تاريخ پرداخت پيش پرداخت"]),
             )
         )
     ProvideComponent.objects.bulk_create(provide_components)

@@ -61,30 +61,6 @@ fields = [
     "EBOM",
 ]
 
-# RUD = [
-#     "R_",
-#     "U_",
-#     "D_",
-# ]  # CRUD without C
-
-# retrieve_update_delete = [
-#     "retrieve ",
-#     "update ",
-#     "delete ",
-# ]
-
-# permission_codes = []
-# for method in RUD:
-#     for field in fields:
-#         permission_codes.append(method + field)
-# permission_codes.append("C")  # permission of creating a new component !!!
-
-# permission_names = []
-# for method in retrieve_update_delete:
-#     for field in fields:
-#         permission_names.append(method + field)
-# permission_names.append("create")
-
 
 class BomComponent(BomBaseModel):
     revision = models.IntegerField(null=True, blank=True)
@@ -182,62 +158,62 @@ class BomFieldPermission(models.Model):
     FIELD_CHOISES = [
         ("revision", "revision"),
         ("ID", "ID"),
-        ("P_on_N_status_code", "P_on_N_status_code"),
-        ("fig_no", "fig_no"),
-        ("item_no", "item_no"),
-        ("module", "module"),
-        ("level", "level"),
-        ("code", "code"),
-        ("parent_code", "parent_code"),
-        ("part_number", "part_number"),
-        ("description", "description"),
-        ("comment", "comment"),
-        ("sap_name", "sap_name"),
-        ("unit_per_assy", "unit_per_assy"),
-        ("unit_per_end_item", "unit_per_end_item"),
-        ("corrected_units_per_end_item", "corrected_units_per_end_item"),
-        ("gg_qty", "gg_qty"),
-        ("srp", "srp"),
-        ("store_comment", "store_comment"),
-        ("assembly", "assembly"),
-        ("standard_part", "standard_part"),
-        ("material", "material"),
-        ("mfg_complexity_level", "mfg_complexity_level"),
-        ("disassembled", "disassembled"),
-        ("supplying_or_manufacturing", "supplying_or_manufacturing"),
-        ("internal_or_external_outsourcing", "internal_or_external_outsourcing"),
-        ("vendor", "vendor"),
-        ("joining", "joining"),
-        ("manufacturing_process", "manufacturing_process"),
-        ("raw_material_form", "raw_material_form"),
-        ("function", "function"),
-        ("qc_criteria", "qc_criteria"),
-        ("manufacturing_priority", "manufacturing_priority"),
+        ("P_on_N_status_code", "P/N Status Code"),
+        ("fig_no", "Fig. No."),
+        ("item_no", "Item No."),
+        ("module", "Module"),
+        ("level", "Level"),
+        ("code", "Code"),
+        ("parent_code", "Parent Code"),
+        ("part_number", "Part Number"),
+        ("description", "Description"),
+        ("comment", "Comment"),
+        ("sap_name", "SAP NAME"),
+        ("unit_per_assy", "Units Per Assy"),
+        ("unit_per_end_item", "Units Per End Item"),
+        ("corrected_units_per_end_item", "Corrected Units Per End Item"),
+        ("gg_qty", "GG QTY"),
+        ("srp", "SRP"),
+        ("store_comment", "Store Comment"),
+        ("assembly", "Assembly"),
+        ("standard_part", "Standard Part"),
+        ("material", "Material"),
+        ("mfg_complexity_level", "Mfg. Complexity Level"),
+        ("disassembled", "Disassembled"),
+        ("supplying_or_manufacturing", "Supplying / Manufacturing "),
+        ("internal_or_external_outsourcing", "Internal / External outsourcing"),
+        ("vendor", "Vendor"),
+        ("joining", "Joining"),
+        ("manufacturing_process", "Manufacturing Process"),
+        ("raw_material_form", "Raw Material Form"),
+        ("function", "Function"),
+        ("qc_criteria", "QC Criteria"),
+        ("manufacturing_priority", "Manufacturing Priority "),
         (
             "manufacturing_responsible_department",
-            "manufacturing_responsible_department",
+            "Manufacturing Responsible Department",
         ),
-        ("designing_responsible_department", "designing_responsible_department"),
-        ("usage_on_other_engines", "usage_on_other_engines"),
-        ("manufacturing_parts_category", "manufacturing_parts_category"),
-        ("scope_matrix_category", "scope_matrix_category"),
+        ("designing_responsible_department", "Designing Responsible Department"),
+        ("usage_on_other_engines", "USAGE ON OTHER ENGINES"),
+        ("manufacturing_parts_category", "MANUFACTURING PARTS Category"),
+        ("scope_matrix_category", "Scope Matrix Category"),
         (
             "requires_manufacturing_or_supplying_for_reassembly",
-            "requires_manufacturing_or_supplying_for_reassembly",
+            "Requires Manufacturing/Supplying For Re-Assembly",
         ),
-        ("system_D_requirements", "system_D_requirements"),
-        ("percurment_state", "percurment_state"),
-        ("details", "details"),
-        ("joint_type", "joint_type"),
-        ("discarded_during_disassembly", "discarded_during_disassembly"),
-        ("expendables", "expendables"),
+        ("system_D_requirements", "System D. Requirement"),
+        ("percurment_state", "PERCURMENT STATE"),
+        ("details", "DETAILS"),
+        ("joint_type", "Joint Type"),
+        ("discarded_during_disassembly", "DISCARDED DURING DISSASSEMBLY"),
+        ("expendables", "Expendables"),
         (
             "discarded_or_unusable_according_to_docs",
-            "discarded_or_unusable_according_to_docs",
+            "Discarded/Unusable According To Docs",
         ),
-        ("destroyed_for_analysis", "destroyed_for_analysis"),
-        ("rejected_by_qc_or_inspection", "rejected_by_qc_or_inspection"),
-        ("class_size_or_weight_as_required", "class_size_or_weight_as_required"),
+        ("destroyed_for_analysis", "Destroyed For Analysis"),
+        ("rejected_by_qc_or_inspection", "Rejected by QC/Inspection"),
+        ("class_size_or_weight_as_required", "Class Size/Weight As Required"),
         ("EBOM", "EBOM"),
     ]
     field = models.CharField(
@@ -251,9 +227,18 @@ class BomFieldPermission(models.Model):
 
 
 class ProvideComponent(BomBaseModel):
+
+    """
+    <--->
+    """
+
     # APPLICATION_TYPE_CHOISE = [
     #     ("contract", "contract"),
     #     ("purchase_report", "purchase_report"),
+    # ]
+    # APPLICATION_TYPE_CHOISE = [
+    #     ("contract", "قرارداد"),
+    #     ("contractor", "پیمانکار"),
     # ]
     APPLICATION_TYPE_CHOISE = [
         ("قرارداد", "قرارداد"),
@@ -262,7 +247,13 @@ class ProvideComponent(BomBaseModel):
     application_type = models.CharField(
         null=True, blank=True, choices=APPLICATION_TYPE_CHOISE, max_length=32
     )  # نوع درخواست
+    """
+    <--->
+    """
 
+    """
+    <--->
+    """
     # SUPPLY_STAGE_CHOISE = [
     #     ("find_contractors_and_qualifications", "find_contractors_and_qualifications"),
     #     ("request_for_inquiry/tender", "request_for_inquiry/tender"),
@@ -282,43 +273,85 @@ class ProvideComponent(BomBaseModel):
     #     ("receive_guarantees", "receive_guarantees"),
     #     ("reference_to_finance", "reference_to_finance"),
     # ]
+    # SUPPLY_STAGE_CHOISE = [
+    #     (
+    #         "find_contractors_and_qualifications",
+    #         "یافتن پیمانكاران و تایید صلاحیت پیمانكار",
+    #     ),
+    #     ("request_for_inquiry/tender", "درخواست استعلام/مناقصه"),
+    #     ("receive_price/payment_proposal", "دریافت پیشنهاد قیمت/پاكات"),
+    #     (
+    #         "receive_technical_approval_from_requesting_unit",
+    #         "دریافت تایید فنی از واحد درخواست دهنده",
+    #     ),
+    #     (
+    #         "transaction_commission_report/purchase_report",
+    #         "تهیه گزارش كمیسیون معاملات/گزارش خرید",
+    #     ),
+    #     ("organization_of_trading_commission", "برگزاری كمیسیون معاملات"),
+    #     ("approval_of_transactions_commission", "تایید كمیسیون معاملات"),
+    #     ("order_notification", "ابلاغ سفارش"),
+    #     ("preparation_of_draft_contract", "تهیه پیش نویس قرارداد"),
+    #     (
+    #         "approval_of_draft_contract_by_applicant",
+    #         "تایید پیش نویس قرارداد توسط درخواست دهنده",
+    #     ),
+    #     ("signature_of_contractor", "امضای پیمانكار"),
+    #     ("internal_signature", "امضای داخلی"),
+    #     ("contract_notification", "ابلاغ قرارداد"),
+    #     ("delivered", "تحویل گردید"),
+    #     ("deleted", "حذف شد"),
+    #     ("receive_guarantees", "دریافت تضامین"),
+    #     ("reference_to_finance", "ارجاع به مالی"),
+    # ]
     SUPPLY_STAGE_CHOISE = [
         (
-            "يافتن پيمانكاران و تاييد صلاحيت پيمانكار",
-            "يافتن پيمانكاران و تاييد صلاحيت پيمانكار",
+            "یافتن پیمانكاران و تایید صلاحیت پیمانكار",
+            "یافتن پیمانكاران و تایید صلاحیت پیمانكار",
         ),
         ("درخواست استعلام/مناقصه", "درخواست استعلام/مناقصه"),
-        ("دريافت پيشنهاد قيمت/پاكات", "دريافت پيشنهاد قيمت/پاكات"),
+        ("دریافت پیشنهاد قیمت/پاكات", "دریافت پیشنهاد قیمت/پاكات"),
         (
-            "دريافت تاييد فني از واحد درخواست دهنده",
-            "دريافت تاييد فني از واحد درخواست دهنده",
+            "دریافت تایید فنی از واحد درخواست دهنده",
+            "دریافت تایید فنی از واحد درخواست دهنده",
         ),
         (
-            "تهيه گزارش كميسيون معاملات/گزارش خريد",
-            "تهيه گزارش كميسيون معاملات/گزارش خريد",
+            "تهیه گزارش كمیسیون معاملات/گزارش خرید",
+            "تهیه گزارش كمیسیون معاملات/گزارش خرید",
         ),
-        ("برگزاري كميسيون معاملات", "برگزاري كميسيون معاملات"),
-        ("تاييد كميسيون معاملات", "تاييد كميسيون معاملات"),
+        ("برگزاری كمیسیون معاملات", "برگزاری كمیسیون معاملات"),
+        ("تایید كمیسیون معاملات", "تایید كمیسیون معاملات"),
         ("ابلاغ سفارش", "ابلاغ سفارش"),
-        ("تهيه پيش نويس قرارداد", "تهيه پيش نويس قرارداد"),
+        ("تهیه پیش نویس قرارداد", "تهیه پیش نویس قرارداد"),
         (
-            "تاييد پيش نويس قرارداد توسط درخواست دهنده",
-            "تاييد پيش نويس قرارداد توسط درخواست دهنده",
+            "تایید پیش نویس قرارداد توسط درخواست دهنده",
+            "تایید پیش نویس قرارداد توسط درخواست دهنده",
         ),
-        ("امضاي پيمانكار", "امضاي پيمانكار"),
-        ("امضاي داخلي", "امضاي داخلي"),
+        ("امضای پیمانكار", "امضای پیمانكار"),
+        ("امضای داخلی", "امضای داخلی"),
         ("ابلاغ قرارداد", "ابلاغ قرارداد"),
-        ("تحويل گرديد", "تحويل گرديد"),
+        ("تحویل گردید", "تحویل گردید"),
         ("حذف شد", "حذف شد"),
-        ("دريافت تضامين", "دريافت تضامين"),
-        ("ارجاع به مالي", "ارجاع به مالي"),
+        ("دریافت تضامین", "دریافت تضامین"),
+        ("ارجاع به مالی", "ارجاع به مالی"),
     ]
     supply_stage = models.TextField(
         null=True, blank=True, max_length=512, choices=SUPPLY_STAGE_CHOISE
     )
+    """
+    <--->
+    """
+
+    """
+    <--->
+    """
     # MATERIAL_SUPPLIER_CHOISE = [
-    #     ("contracter", "contracter"),
+    #     ("contractor", "contractor"),
     #     ("employer", "employer"),
+    # ]
+    # MATERIAL_SUPPLIER_CHOISE = [
+    #     ("contractor", "پیمانکار"),
+    #     ("employer", "کارفرما"),
     # ]
     MATERIAL_SUPPLIER_CHOISE = [
         ("پیمانکار", "پیمانکار"),
@@ -327,21 +360,43 @@ class ProvideComponent(BomBaseModel):
     material_supplier = models.CharField(
         null=True, blank=True, choices=MATERIAL_SUPPLIER_CHOISE, max_length=32
     )
+    """
+    <--->
+    """
+
     pr = models.BigIntegerField(null=True, blank=True)
     po = models.IntegerField(null=True, blank=True)
     subject = models.TextField(null=True, blank=True, max_length=512)
+
+    """
+    <--->
+    """
+    # REQUEST_TYPE_CHOISE = [
+    #     ("raw_material", "ماده اولیه"),
+    #     ("semi_finished", "ماده نیمه آماده"),
+    #     ("component_supply", "تامین قطعه"),
+    #     ("manufacturing", "ساخت"),
+    #     ("tools_and_machinery", "ابزار و ماشین آلات"),
+    #     ("service", "خدمت"),
+    # ]
     REQUEST_TYPE_CHOISE = [
-        ("ماده اوليه", "ماده اوليه"),
-        ("ماده نيمه آماده", "ماده نيمه آماده"),
-        ("تامين قطعه", "تامين قطعه"),
+        ("ماده اولیه", "ماده اولیه"),
+        ("ماده نیمه آماده", "ماده نیمه آماده"),
+        ("تامین قطعه", "تامین قطعه"),
         ("ساخت", "ساخت"),
-        ("ابزار و ماشين آلات", "ابزار و ماشين آلات"),
+        ("ابزار و ماشین آلات", "ابزار و ماشین آلات"),
         ("خدمت", "خدمت"),
     ]
     request_type = models.CharField(
         null=True, blank=True, max_length=128, choices=REQUEST_TYPE_CHOISE
     )  # جنس درخواست
+    """
+    <--->
+    """
 
+    """
+    <--->
+    """
     # customer_management = models.ForeignKey(
     #     Department,
     #     null=True,
@@ -349,18 +404,31 @@ class ProvideComponent(BomBaseModel):
     #     on_delete=models.CASCADE,
     #     related_name="customer_management",
     # )
+    # CUSTOMER_MANAGEMENT_CHOISE = [
+    #     ("fan_and_compressor", "فن و کمپرسور"),
+    #     ("lateral", "جانبی"),
+    #     ("turbine", "توربین"),
+    #     ("minor_part", "ماینور پارت"),
+    #     ("combustion_chamber", "محفظه احتراق"),
+    #     ("engine_structure_design", "طراحی سازه موتور"),
+    #     ("standard_and_quality", "استاندارد و كیفیت"),
+    # ]
     CUSTOMER_MANAGEMENT_CHOISE = [
         ("فن و کمپرسور", "فن و کمپرسور"),
         ("جانبی", "جانبی"),
         ("توربین", "توربین"),
         ("ماینور پارت", "ماینور پارت"),
         ("محفظه احتراق", "محفظه احتراق"),
-        ("طراحي سازه موتور", "طراحي سازه موتور"),
-        ("استاندارد و كيفيت", "استاندارد و كيفيت"),
+        ("طراحی سازه موتور", "طراحی سازه موتور"),
+        ("استاندارد و كیفیت", "استاندارد و كیفیت"),
     ]
     customer_management = models.CharField(
         null=True, blank=True, max_length=128, choices=CUSTOMER_MANAGEMENT_CHOISE
     )
+    """
+    <--->
+    """
+
     contract_number = models.BigIntegerField(null=True, blank=True)
     supplier = models.CharField(null=True, blank=True, max_length=64)
 
@@ -373,18 +441,39 @@ class ProvideComponent(BomBaseModel):
     <--- SUM --->
     """
 
+    """
+    <--->
+    """
+    # CURRENCY_CHOISE = [
+    #     ("rial", "ریال"),
+    #     ("euro", "یورو"),
+    #     ("dollar", "دلار"),
+    #     ("yuan", "یوان"),
+    #     ("dirham", "درهم"),
+    # ]
     CURRENCY_CHOISE = [
         ("ریال", "ریال"),
-        ("يورو", "يورو"),
+        ("یورو", "یورو"),
         ("دلار", "دلار"),
-        ("يوان", "يوان"),
+        ("یوان", "یوان"),
         ("درهم", "درهم"),
     ]
     currency = models.CharField(
         null=True, blank=True, max_length=16, choices=CURRENCY_CHOISE
     )
+    """
+    <--->
+    """
 
+    """
+    <--->
+    """
     # expert = models.ForeignKey(BomUser, null=True, blank=True, on_delete=models.CASCADE)
+    # EXPERT_CHOISE = [
+    #     ("ghaniabadi", "غنی آبادی"),
+    #     ("mohammadzadeh", "محمد زاده"),
+    #     ("roshandel", "روشن دل"),
+    # ]
     EXPERT_CHOISE = [
         ("غنی آبادی", "غنی آبادی"),
         ("محمد زاده", "محمد زاده"),
@@ -393,6 +482,9 @@ class ProvideComponent(BomBaseModel):
     expert = models.CharField(
         null=True, blank=True, max_length=64, choices=EXPERT_CHOISE
     )
+    """
+    <--->
+    """
 
     prepayment_percentage = models.IntegerField(
         validators=PERCENTAGE_VALIDATOR, null=True, blank=True
@@ -413,26 +505,44 @@ class ProvideComponent(BomBaseModel):
     prepayment_guarantee = models.BigIntegerField(null=True, blank=True)
     mortgage_document_guarantee = models.BigIntegerField(null=True, blank=True)
     # sum_of_prepayment_guarantees = models.BigIntegerField(null=True, blank=True)
+
+    """
+    <--->
+    """
+    # FINANCIAL_SITUATION_CHOISE = [
+    #     ("receiving_guarantees", "دریافت تضامین"),
+    #     ("prepayment_request", "درخواست پیش پرداخت"),
+    #     ("determining_the_type_of_currency", "تعیین نوع ارز"),
+    #     ("agreement_with_the_supplier", "توافق با تامین كننده"),
+    #     ("receiving_currency_documents", "دریافت مستندات ارزی"),
+    #     ("currency_request_from_mapna_international", "درخواست ارز از مپنا بین الملل"),
+    #     ("sending_documents_to_mapna_international", "ارسال مدارك به مپنا بین الملل"),
+    #     ("tracking_currency_request", "پیگیری درخواست ارز"),
+    #     ("paid", "پرداخت شده"),
+    # ]
     FINANCIAL_SITUATION_CHOISE = [
-        ("دريافت تضامين", "دريافت تضامين"),
-        ("درخواست پيش پرداخت", "درخواست پيش پرداخت"),
-        ("تعيين نوع ارز", "تعيين نوع ارز"),
-        ("توافق با تامين كننده", "توافق با تامين كننده"),
-        ("دريافت مستندات ارزي", "دريافت مستندات ارزي"),
-        ("درخواست ارز از مپنا بين الملل", "درخواست ارز از مپنا بين الملل"),
-        ("ارسال مدارك به مپنا بين الملل", "ارسال مدارك به مپنا بين الملل"),
-        ("پيگيري درخواست ارز", "پيگيري درخواست ارز"),
+        ("دریافت تضامین", "دریافت تضامین"),
+        ("درخواست پیش پرداخت", "درخواست پیش پرداخت"),
+        ("تعیین نوع ارز", "تعیین نوع ارز"),
+        ("توافق با تامین كننده", "توافق با تامین كننده"),
+        ("دریافت مستندات ارزی", "دریافت مستندات ارزی"),
+        ("درخواست ارز از مپنا بین الملل", "درخواست ارز از مپنا بین الملل"),
+        ("ارسال مدارك به مپنا بین الملل", "ارسال مدارك به مپنا بین الملل"),
+        ("پیگیری درخواست ارز", "پیگیری درخواست ارز"),
         ("پرداخت شده", "پرداخت شده"),
     ]
     financial_situation = models.CharField(
         null=True, blank=True, max_length=64, choices=FINANCIAL_SITUATION_CHOISE
     )
+    """
+    <--->
+    """
 
     # prepayment_request_date = JalaliDateField()
     prepayment_request_date = models.CharField(null=True, blank=True, max_length=10)
 
     prepayment_amount = models.BigIntegerField(null=True, blank=True)
-    
+
     # prepayment_date = JalaliDateField()
     prepayment_date = models.CharField(null=True, blank=True, max_length=10)
 
@@ -440,35 +550,35 @@ class ProvideComponent(BomBaseModel):
 class ProvideFieldPermission(models.Model):
     instance_id = models.IntegerField(null=True, blank=True)
     # FIELD_CHOISES = [
-    #     ("نوع درخواست (گزارش خريد/قرارداد)", "نوع درخواست (گزارش خريد/قرارداد)"),
-    #     ("مرحله تامين", "مرحله تامين"),
-    #     ("تامين كننده متريال", "تامين كننده متريال"),
+    #     ("نوع درخواست (گزارش خرید/قرارداد)", "نوع درخواست (گزارش خرید/قرارداد)"),
+    #     ("مرحله تامین", "مرحله تامین"),
+    #     ("تامین كننده متریال", "تامین كننده متریال"),
     #     ("شماره PR", "شماره PR"),
     #     ("شماره PO", "شماره PO"),
     #     ("موضوع", "موضوع"),
     #     ("جنس درخواست", "جنس درخواست"),
-    #     ("مديريت سفارش دهنده", "مديريت سفارش دهنده"),
+    #     ("مدیریت سفارش دهنده", "مدیریت سفارش دهنده"),
     #     ("شماره قرارداد", "شماره قرارداد"),
-    #     ("تامين كننده", "تامين كننده"),
+    #     ("تامین كننده", "تامین كننده"),
     #     ("مبلغ", "مبلغ"),
-    #     ("مبلغ تعديل", "مبلغ تعديل"),
+    #     ("مبلغ تعدیل", "مبلغ تعدیل"),
     #     (" جمع مبلغ ", " جمع مبلغ "),
     #     ("نوع ارز", "نوع ارز"),
     #     ("كارشناس مسئول", "كارشناس مسئول"),
-    #     ("درصد پيش‌پرداخت", "درصد پيش‌پرداخت"),
-    #     ("مبلغ پيش‌پرداخت طبق قرارداد", "مبلغ پيش‌پرداخت طبق قرارداد"),
-    #     ("پيش پرداخت توسط توگا", "پيش پرداخت توسط توگا"),
-    #     ("پيش پرداخت توسط موتور هوايي", "پيش پرداخت توسط موتور هوايي"),
-    #     (" جمع پيش پرداخت ها- ريالي ", " جمع پيش پرداخت ها- ريالي "),
-    #     (" چك تضمين پيش پرداخت ", " چك تضمين پيش پرداخت "),
-    #     (" ضمانتنامه پيش پرداخت ", " ضمانتنامه پيش پرداخت "),
-    #     (" ضمانت نامه سند رهني ", " ضمانت نامه سند رهني "),
-    #     (" جمع ضمانت نامه هاي پيش پرداخت ", " جمع ضمانت نامه هاي پيش پرداخت "),
-    #     ("وضعيت در معاونت مالي", "وضعيت در معاونت مالي"),
-    #     ("تاريخ درخواست پيش پرداخت", "تاريخ درخواست پيش پرداخت"),
-    #     ("مبلغ پيش پرداخت", "مبلغ پيش پرداخت"),
+    #     ("درصد پیش‌پرداخت", "درصد پیش‌پرداخت"),
+    #     ("مبلغ پیش‌پرداخت طبق قرارداد", "مبلغ پیش‌پرداخت طبق قرارداد"),
+    #     ("پیش پرداخت توسط توگا", "پیش پرداخت توسط توگا"),
+    #     ("پیش پرداخت توسط موتور هوایی", "پیش پرداخت توسط موتور هوایی"),
+    #     (" جمع پیش پرداخت ها- ریالی ", " جمع پیش پرداخت ها- ریالی "),
+    #     (" چك تضمین پیش پرداخت ", " چك تضمین پیش پرداخت "),
+    #     (" ضمانتنامه پیش پرداخت ", " ضمانتنامه پیش پرداخت "),
+    #     (" ضمانت نامه سند رهنی ", " ضمانت نامه سند رهنی "),
+    #     (" جمع ضمانت نامه های پیش پرداخت ", " جمع ضمانت نامه های پیش پرداخت "),
+    #     ("وضعیت در معاونت مالی", "وضعیت در معاونت مالی"),
+    #     ("تاریخ درخواست پیش پرداخت", "تاریخ درخواست پیش پرداخت"),
+    #     ("مبلغ پیش پرداخت", "مبلغ پیش پرداخت"),
     #     ("نوع ارز", "نوع ارز"),
-    #     ("تاريخ پرداخت پيش پرداخت", "تاريخ پرداخت پيش پرداخت"),
+    #     ("تاریخ پرداخت پیش پرداخت", "تاریخ پرداخت پیش پرداخت"),
     # ]
     FIELD_CHOISES = [
         ("application_type", "application_type"),

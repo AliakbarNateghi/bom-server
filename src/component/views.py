@@ -167,12 +167,17 @@ class Component(ModelViewSet):
 
         try:
             for instance in instances:
-                for key, value in json_dict.items():
-                    if instance.field == key and instance.editable:
-                        data = {f"{key}": value}
-                        serializer = self.get_serializer(obj, data=data, partial=True)
-                        serializer.is_valid(raise_exception=True)
-                        serializer.save()
+                if instance.field in json_dict and instance.editable:
+                    value = json_dict[instance.field]
+                    # for instance in instances:
+                    #     for key, value in json_dict.items():
+                    # print(f"key : {key}")
+                    print(f"instance.field : {instance.field}")
+                    #         if instance.field == key and instance.editable:
+                    data = {f"{instance.field}": value}
+                    serializer = self.get_serializer(obj, data=data, partial=True)
+                    serializer.is_valid(raise_exception=True)
+                    serializer.save()
         except:
             queryset_dict = {}
             for instance in instances:

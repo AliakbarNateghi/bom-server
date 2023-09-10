@@ -17,13 +17,13 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from ..core.permissions import IsGod, IsOwner
 from .models import BomUser, HiddenColumns
 from .serializers import (
-    GroupSerializer, 
-    UserInfoSerializer, 
-    UserSerializer, 
-    PasswordChangeSerializer, 
-    HiddenColumnsSerializer, 
+    GroupSerializer,
+    HiddenColumnsSerializer,
+    PasswordChangeSerializer,
+    UserInfoSerializer,
+    UserSerializer,
     UsersInfoReadOnlySerializer,
-    UsersInfoWriteOnlySerializer
+    UsersInfoWriteOnlySerializer,
 )
 
 
@@ -91,8 +91,7 @@ class UsersInfo(
 
     def get_serializer_class(self):
         method = self.request.method
-        if method == 'PUT' or method == 'POST':
-            print("OKAY")
+        if method == "PUT" or method == "POST":
             return UsersInfoWriteOnlySerializer
         else:
             return UsersInfoReadOnlySerializer
@@ -111,7 +110,7 @@ class UserInfo(
 
     def get_queryset(self):
         return self.queryset.filter(id=self.request.user.id)
-    
+
     def perform_update(self, serializer):
         serializer.save(username=self.request.user.username)
 
@@ -121,28 +120,31 @@ class UserInfo(
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
-    
-    @action(detail=True, methods=['post'])
+
+    @action(detail=True, methods=["post"])
     def change_password(self, request, username=None):
         user = self.get_object()
         serializer = PasswordChangeSerializer(data=request.data)
 
         if serializer.is_valid():
             # Check if the old password matches the user's current password
-            if not user.check_password(serializer.validated_data['old_password']):
-                return Response({'error': 'Invalid old pass'}, status=400)
+            if not user.check_password(serializer.validated_data["old_password"]):
+                return Response({"error": "Invalid old pass"}, status=400)
 
             # Check if the new password and confirmation match
-            if serializer.validated_data['new_password'] != serializer.validated_data['confirm_password']:
-                return Response({'error': 'not match'}, status=400)
+            if (
+                serializer.validated_data["new_password"]
+                != serializer.validated_data["confirm_password"]
+            ):
+                return Response({"error": "not match"}, status=400)
 
             # Set the new password and save the user
-            user.set_password(serializer.validated_data['new_password'])
+            user.set_password(serializer.validated_data["new_password"])
             user.save()
 
-            return Response({'message': 'success'}, status=200)
+            return Response({"message": "success"}, status=200)
 
-        return Response(serializer.errors, {'error': 'wrong'}, status=400)
+        return Response(serializer.errors, {"error": "wrong"}, status=400)
 
 
 class GroupsViewSet(mixins.ListModelMixin, GenericViewSet):
@@ -166,14 +168,9 @@ class HiddenColumnsViewSet(ModelViewSet):
         except HiddenColumns.DoesNotExist:
             pass
         serializer.save(user=self.request.user)
-    
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        
-
-
-

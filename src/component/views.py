@@ -94,9 +94,13 @@ class Component(ModelViewSet):
         queryset = raw_queryset.filter(id__in=instance_ids)
         queryset_dict = {}
         editable_dict = {}
+        count = 0
         for instance in instances:
+            # print(f"instance : {instance}")
             id = instance.instance_id
             field = instance.field
+            count += 1
+            # print(f"id : {id} / field : {type(field)}:{field} / count : {count}")
             editable = instance.editable
             try:
                 if id not in queryset_dict:
@@ -104,7 +108,7 @@ class Component(ModelViewSet):
                     queryset_dict[id] = {"id": id}
                     editable_dict[id] = {"id": id}
                 # queryset_dict[id][field] = json.loads(serializers.serialize('json', [getattr(obj, field), ]))[0]["fields"]["name"] if type(getattr(obj, field)) == Department else getattr(obj, field)
-                queryset_dict[id][field] = getattr(obj, field)
+                queryset_dict[id][field] = getattr(obj, field) if field != None else None              
                 editable_dict[id][field] = editable
             except queryset.model.DoesNotExist:
                 pass

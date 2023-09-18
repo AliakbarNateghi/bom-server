@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import numpy as np
 from django.contrib.auth.models import Group
@@ -60,6 +60,7 @@ class Login(TokenObtainPairView):
             httponly=True,
             secure=True,
             samesite="Strict",
+            expires=datetime.now() + timedelta(days=365)
         )
         res.set_cookie(
             key="refresh_token",

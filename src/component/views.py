@@ -52,8 +52,6 @@ def find_component_model(kwargs):
 
 
 class Component(ModelViewSet):
-    # queryset = BomComponent.objects.all()
-    # serializer_class = ComponentSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = CustomCursorPagination
 
@@ -96,11 +94,9 @@ class Component(ModelViewSet):
         editable_dict = {}
         count = 0
         for instance in instances:
-            # print(f"instance : {instance}")
             id = instance.instance_id
             field = instance.field
             count += 1
-            # print(f"id : {id} / field : {type(field)}:{field} / count : {count}")
             editable = instance.editable
             try:
                 if id not in queryset_dict:
@@ -236,8 +232,6 @@ class Component(ModelViewSet):
 
 
 class FieldPermissionView(ModelViewSet):
-    # queryset = FieldPermission.objects.all()
-    # serializer_class = FieldPermissionSerializer
     permission_classes = [IsAuthenticated, IsGod, IsAdminUser]
 
     def get_queryset(self):
@@ -345,7 +339,6 @@ class MassPermissionViewSet(
     mixins.CreateModelMixin,
     GenericViewSet,
 ):
-    # queryset = FieldPermission.objects.all()
     serializer_class = MassPermissionSerializer
 
     def get_queryset(self):

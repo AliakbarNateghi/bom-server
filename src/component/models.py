@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from jalali_date.fields import JalaliDateField
 
@@ -152,6 +152,16 @@ class BomComponent(BomBaseModel):
     # class Meta:
     #     permissions = list(zip(permission_codes, permission_names))
 
+
+class BomDocumentCode(models.Model):
+    code = models.CharField(null=False, blank=False, max_length=32, unique=True, validators=[RegexValidator(regex='^[A-Z]{3}-[0-9]{3}$', message='Format must be AAA-000.')])
+    bomComponent = models.ForeignKey(BomComponent, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(BomUser, on_delete=models.CASCADE)
+    hyper_link = models.URLField(max_length=200, null=True, blank=True)
+
+    def __str__(self):
+        return self.code
 
 class BomFieldPermission(models.Model):
     instance_id = models.IntegerField(null=True, blank=True)
@@ -547,6 +557,16 @@ class ProvideComponent(BomBaseModel):
     prepayment_date = models.CharField(null=True, blank=True, max_length=10)
 
 
+class ProvideDocumentCode(models.Model):
+    code = models.CharField(null=False, blank=False, max_length=32, unique=True, validators=[RegexValidator(regex='^[A-Z]{3}-[0-9]{3}$', message='Format must be AAA-000.')])
+    bomComponent = models.ForeignKey(ProvideComponent, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(BomUser, on_delete=models.CASCADE)
+    hyper_link = models.URLField(max_length=200, null=True, blank=True)
+
+    def __str__(self):
+        return self.code
+    
 class ProvideFieldPermission(models.Model):
     instance_id = models.IntegerField(null=True, blank=True)
     # FIELD_CHOISES = [

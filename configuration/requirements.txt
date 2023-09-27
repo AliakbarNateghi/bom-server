@@ -11,7 +11,9 @@ cryptography==41.0.2
 daphne==4.0.0
 Django==4.2.3
 django-cors-headers==4.1.0
+django-cursor-pagination==0.2.1
 django-dotenv==1.4.2
+django-jalali-date==1.0.2
 django-rest-framework==0.1.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
@@ -20,6 +22,7 @@ hyperlink==21.0.0
 idna==3.4
 incremental==22.10.0
 isort==5.12.0
+jdatetime==4.1.1
 mypy-extensions==1.0.0
 numpy==1.25.0
 openpyxl==3.1.2

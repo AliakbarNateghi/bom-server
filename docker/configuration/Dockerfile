@@ -15,7 +15,7 @@ COPY . /bom-server/
 
 RUN ls -ltrh
 
-ENV PIP_INDEX_URL=https://pypi.iranrepo.ir/simple
+# ENV PIP_INDEX_URL=https://pypi.iranrepo.ir/simple
 # RUN pip install --upgrade pip
 RUN pip install gunicorn
 
@@ -25,4 +25,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # RUN python3 manage.py collectstatic --noinput
 
 RUN chmod +x /bom-server/docker/configuration/server-entrypoint.sh
-RUN chmod +x /bom-server/docker/configuration/worker-entrypoint.sh
+# RUN chmod +x /bom-server/docker/configuration/worker-entrypoint.sh

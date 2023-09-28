@@ -38,7 +38,8 @@ done
 
 # python3 manage.py createsuperuser --noinput
 
-gunicorn configuration.wsgi --bind 0.0.0.0:8000 --workers 1 --threads 1
+gunicorn configuration.wsgi --bind 0.0.0.0:8000 
+# --workers 1 --threads 1
 
 # for debug
 python3 manage.py runserver 0.0.0.0:8000

@@ -2,6 +2,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+from datetime import datetime, timedelta
 
 
 class CookieBaseJWTAuthentication(JWTAuthentication):
@@ -15,7 +16,6 @@ class CookieBaseJWTAuthentication(JWTAuthentication):
         # Allow unauthenticated requests for registration endpoint
         if request.path == "/api/register/":
             return None
-        # print(f'request : {request.headers}')
 
         access_token = request.COOKIES.get("access_token")
         refresh_token = request.COOKIES.get("refresh_token")
@@ -51,6 +51,16 @@ class SetCookiesMiddleWare:
                 httponly=True,
                 secure=True,
                 samesite="Strict",
+                expires=datetime.now() + timedelta(days=30)
+            )
+        if request.COOKIES.get("refresh_token"):
+            res.set_cookie(
+                key="refresh_token",
+                value=request.COOKIES.get("refresh_token"),
+                httponly=True,
+                secure=True,
+                samesite="Strict",
+                expires=datetime.now() + timedelta(days=30)
             )
 
         return res

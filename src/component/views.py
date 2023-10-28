@@ -172,7 +172,6 @@ class Component(ModelViewSet):
                     # for instance in instances:
                     #     for key, value in json_dict.items():
                     # print(f"key : {key}")
-                    print(f"instance.field : {instance.field}")
                     #         if instance.field == key and instance.editable:
                     data = {f"{instance.field}": value}
                     serializer = self.get_serializer(obj, data=data, partial=True)
@@ -242,7 +241,6 @@ class FieldPermissionView(ModelViewSet):
 
     def get_serializer_class(self):
         if self.kwargs["table"] == "bom":
-            print
             return BomFieldPermissionSerializer
         elif self.kwargs["table"] == "provide":
             return ProvideFieldPermissionSerializer
@@ -366,7 +364,6 @@ class MassPermissionViewSet(
         if editable != None:
             group = Group.objects.get(id=group)
             count = component.count()
-            print(count)
             instances = [
                 queryset.model(
                     instance_id=instance_id, field=field, group=group, editable=editable

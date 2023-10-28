@@ -93,6 +93,8 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=180),
 }
 
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

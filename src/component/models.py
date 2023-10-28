@@ -153,16 +153,6 @@ class BomComponent(BomBaseModel):
     #     permissions = list(zip(permission_codes, permission_names))
 
 
-class BomDocumentCode(models.Model):
-    code = models.CharField(null=False, blank=False, max_length=32, unique=True, validators=[RegexValidator(regex='^[A-Z]{3}-[0-9]{3}$', message='Format must be AAA-000.')])
-    bomComponent = models.ForeignKey(BomComponent, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(BomUser, on_delete=models.CASCADE)
-    hyper_link = models.URLField(max_length=200, null=True, blank=True)
-
-    def __str__(self):
-        return self.code
-
 class BomFieldPermission(models.Model):
     instance_id = models.IntegerField(null=True, blank=True)
     FIELD_CHOISES = [
@@ -237,19 +227,6 @@ class BomFieldPermission(models.Model):
 
 
 class ProvideComponent(BomBaseModel):
-
-    """
-    <--->
-    """
-
-    # APPLICATION_TYPE_CHOISE = [
-    #     ("contract", "contract"),
-    #     ("purchase_report", "purchase_report"),
-    # ]
-    # APPLICATION_TYPE_CHOISE = [
-    #     ("contract", "قرارداد"),
-    #     ("contractor", "پیمانکار"),
-    # ]
     APPLICATION_TYPE_CHOISE = [
         ("قرارداد", "قرارداد"),
         ("پیمانکار", "پیمانکار"),
@@ -257,63 +234,7 @@ class ProvideComponent(BomBaseModel):
     application_type = models.CharField(
         null=True, blank=True, choices=APPLICATION_TYPE_CHOISE, max_length=32
     )  # نوع درخواست
-    """
-    <--->
-    """
 
-    """
-    <--->
-    """
-    # SUPPLY_STAGE_CHOISE = [
-    #     ("find_contractors_and_qualifications", "find_contractors_and_qualifications"),
-    #     ("request_for_inquiry/tender", "request_for_inquiry/tender"),
-    #     ("receive_price/payment_proposal", "receive_price/payment_proposal"),
-    #     ("receive_technical_approval_from_requesting_unit", "receive_technical_approval_from_requesting_unit"),
-    #     ("transaction_commission_report/purchase_report", "transaction_commission_report/purchase_report"),
-    #     ("organization_of_trading_commission", "organization_of_trading_commission"),
-    #     ("approval_of_transactions_commission", "approval_of_transactions_commission"),
-    #     ("order_notification", "order_notification"),
-    #     ("preparation_of_draft_contract", "preparation_of_draft_contract"),
-    #     ("approval_of_draft_contract_by_applicant", "approval_of_draft_contract_by_applicant"),
-    #     ("signature_of_contractor", "signature_of_contractor"),
-    #     ("internal_signature", "internal_signature"),
-    #     ("contract_notification", "contract_notification"),
-    #     ("delivered", "delivered"),
-    #     ("deleted", "deleted"),
-    #     ("receive_guarantees", "receive_guarantees"),
-    #     ("reference_to_finance", "reference_to_finance"),
-    # ]
-    # SUPPLY_STAGE_CHOISE = [
-    #     (
-    #         "find_contractors_and_qualifications",
-    #         "یافتن پیمانكاران و تایید صلاحیت پیمانكار",
-    #     ),
-    #     ("request_for_inquiry/tender", "درخواست استعلام/مناقصه"),
-    #     ("receive_price/payment_proposal", "دریافت پیشنهاد قیمت/پاكات"),
-    #     (
-    #         "receive_technical_approval_from_requesting_unit",
-    #         "دریافت تایید فنی از واحد درخواست دهنده",
-    #     ),
-    #     (
-    #         "transaction_commission_report/purchase_report",
-    #         "تهیه گزارش كمیسیون معاملات/گزارش خرید",
-    #     ),
-    #     ("organization_of_trading_commission", "برگزاری كمیسیون معاملات"),
-    #     ("approval_of_transactions_commission", "تایید كمیسیون معاملات"),
-    #     ("order_notification", "ابلاغ سفارش"),
-    #     ("preparation_of_draft_contract", "تهیه پیش نویس قرارداد"),
-    #     (
-    #         "approval_of_draft_contract_by_applicant",
-    #         "تایید پیش نویس قرارداد توسط درخواست دهنده",
-    #     ),
-    #     ("signature_of_contractor", "امضای پیمانكار"),
-    #     ("internal_signature", "امضای داخلی"),
-    #     ("contract_notification", "ابلاغ قرارداد"),
-    #     ("delivered", "تحویل گردید"),
-    #     ("deleted", "حذف شد"),
-    #     ("receive_guarantees", "دریافت تضامین"),
-    #     ("reference_to_finance", "ارجاع به مالی"),
-    # ]
     SUPPLY_STAGE_CHOISE = [
         (
             "یافتن پیمانكاران و تایید صلاحیت پیمانكار",
@@ -348,21 +269,6 @@ class ProvideComponent(BomBaseModel):
     supply_stage = models.TextField(
         null=True, blank=True, max_length=512, choices=SUPPLY_STAGE_CHOISE
     )
-    """
-    <--->
-    """
-
-    """
-    <--->
-    """
-    # MATERIAL_SUPPLIER_CHOISE = [
-    #     ("contractor", "contractor"),
-    #     ("employer", "employer"),
-    # ]
-    # MATERIAL_SUPPLIER_CHOISE = [
-    #     ("contractor", "پیمانکار"),
-    #     ("employer", "کارفرما"),
-    # ]
     MATERIAL_SUPPLIER_CHOISE = [
         ("پیمانکار", "پیمانکار"),
         ("کارفرما", "کارفرما"),
@@ -370,25 +276,9 @@ class ProvideComponent(BomBaseModel):
     material_supplier = models.CharField(
         null=True, blank=True, choices=MATERIAL_SUPPLIER_CHOISE, max_length=32
     )
-    """
-    <--->
-    """
-
     pr = models.BigIntegerField(null=True, blank=True)
     po = models.IntegerField(null=True, blank=True)
     subject = models.TextField(null=True, blank=True, max_length=512)
-
-    """
-    <--->
-    """
-    # REQUEST_TYPE_CHOISE = [
-    #     ("raw_material", "ماده اولیه"),
-    #     ("semi_finished", "ماده نیمه آماده"),
-    #     ("component_supply", "تامین قطعه"),
-    #     ("manufacturing", "ساخت"),
-    #     ("tools_and_machinery", "ابزار و ماشین آلات"),
-    #     ("service", "خدمت"),
-    # ]
     REQUEST_TYPE_CHOISE = [
         ("ماده اولیه", "ماده اولیه"),
         ("ماده نیمه آماده", "ماده نیمه آماده"),
@@ -400,13 +290,7 @@ class ProvideComponent(BomBaseModel):
     request_type = models.CharField(
         null=True, blank=True, max_length=128, choices=REQUEST_TYPE_CHOISE
     )  # جنس درخواست
-    """
-    <--->
-    """
 
-    """
-    <--->
-    """
     # customer_management = models.ForeignKey(
     #     Department,
     #     null=True,
@@ -414,15 +298,7 @@ class ProvideComponent(BomBaseModel):
     #     on_delete=models.CASCADE,
     #     related_name="customer_management",
     # )
-    # CUSTOMER_MANAGEMENT_CHOISE = [
-    #     ("fan_and_compressor", "فن و کمپرسور"),
-    #     ("lateral", "جانبی"),
-    #     ("turbine", "توربین"),
-    #     ("minor_part", "ماینور پارت"),
-    #     ("combustion_chamber", "محفظه احتراق"),
-    #     ("engine_structure_design", "طراحی سازه موتور"),
-    #     ("standard_and_quality", "استاندارد و كیفیت"),
-    # ]
+
     CUSTOMER_MANAGEMENT_CHOISE = [
         ("فن و کمپرسور", "فن و کمپرسور"),
         ("جانبی", "جانبی"),
@@ -435,32 +311,10 @@ class ProvideComponent(BomBaseModel):
     customer_management = models.CharField(
         null=True, blank=True, max_length=128, choices=CUSTOMER_MANAGEMENT_CHOISE
     )
-    """
-    <--->
-    """
-
     contract_number = models.BigIntegerField(null=True, blank=True)
     supplier = models.CharField(null=True, blank=True, max_length=64)
-
-    """
-    <--- SUM --->
-    """
     amount = models.BigIntegerField(null=True, blank=True)
     adjustment_amount = models.BigIntegerField(null=True, blank=True)
-    """
-    <--- SUM --->
-    """
-
-    """
-    <--->
-    """
-    # CURRENCY_CHOISE = [
-    #     ("rial", "ریال"),
-    #     ("euro", "یورو"),
-    #     ("dollar", "دلار"),
-    #     ("yuan", "یوان"),
-    #     ("dirham", "درهم"),
-    # ]
     CURRENCY_CHOISE = [
         ("ریال", "ریال"),
         ("یورو", "یورو"),
@@ -471,19 +325,6 @@ class ProvideComponent(BomBaseModel):
     currency = models.CharField(
         null=True, blank=True, max_length=16, choices=CURRENCY_CHOISE
     )
-    """
-    <--->
-    """
-
-    """
-    <--->
-    """
-    # expert = models.ForeignKey(BomUser, null=True, blank=True, on_delete=models.CASCADE)
-    # EXPERT_CHOISE = [
-    #     ("ghaniabadi", "غنی آبادی"),
-    #     ("mohammadzadeh", "محمد زاده"),
-    #     ("roshandel", "روشن دل"),
-    # ]
     EXPERT_CHOISE = [
         ("غنی آبادی", "غنی آبادی"),
         ("محمد زاده", "محمد زاده"),
@@ -492,44 +333,18 @@ class ProvideComponent(BomBaseModel):
     expert = models.CharField(
         null=True, blank=True, max_length=64, choices=EXPERT_CHOISE
     )
-    """
-    <--->
-    """
-
     prepayment_percentage = models.IntegerField(
         validators=PERCENTAGE_VALIDATOR, null=True, blank=True
     )
     currency_type = models.CharField(null=True, blank=True, max_length=64)
     prepayment_according_to_contract = models.BigIntegerField(null=True, blank=True)
-
-    """
-    <--- SUM --->
-    """
     prepaid_by_toga = models.BigIntegerField(null=True, blank=True)
     prepaid_by_air_engine = models.BigIntegerField(null=True, blank=True)
-    """
-    <--- SUM --->
-    """
-
     prepayment_guarantee_check = models.CharField(null=True, blank=True, max_length=64)
     prepayment_guarantee = models.BigIntegerField(null=True, blank=True)
     mortgage_document_guarantee = models.BigIntegerField(null=True, blank=True)
     # sum_of_prepayment_guarantees = models.BigIntegerField(null=True, blank=True)
 
-    """
-    <--->
-    """
-    # FINANCIAL_SITUATION_CHOISE = [
-    #     ("receiving_guarantees", "دریافت تضامین"),
-    #     ("prepayment_request", "درخواست پیش پرداخت"),
-    #     ("determining_the_type_of_currency", "تعیین نوع ارز"),
-    #     ("agreement_with_the_supplier", "توافق با تامین كننده"),
-    #     ("receiving_currency_documents", "دریافت مستندات ارزی"),
-    #     ("currency_request_from_mapna_international", "درخواست ارز از مپنا بین الملل"),
-    #     ("sending_documents_to_mapna_international", "ارسال مدارك به مپنا بین الملل"),
-    #     ("tracking_currency_request", "پیگیری درخواست ارز"),
-    #     ("paid", "پرداخت شده"),
-    # ]
     FINANCIAL_SITUATION_CHOISE = [
         ("دریافت تضامین", "دریافت تضامین"),
         ("درخواست پیش پرداخت", "درخواست پیش پرداخت"),
@@ -544,62 +359,17 @@ class ProvideComponent(BomBaseModel):
     financial_situation = models.CharField(
         null=True, blank=True, max_length=64, choices=FINANCIAL_SITUATION_CHOISE
     )
-    """
-    <--->
-    """
 
     # prepayment_request_date = JalaliDateField()
     prepayment_request_date = models.CharField(null=True, blank=True, max_length=10)
-
     prepayment_amount = models.BigIntegerField(null=True, blank=True)
 
     # prepayment_date = JalaliDateField()
     prepayment_date = models.CharField(null=True, blank=True, max_length=10)
 
-
-class ProvideDocumentCode(models.Model):
-    code = models.CharField(null=False, blank=False, max_length=32, unique=True, validators=[RegexValidator(regex='^[A-Z]{3}-[0-9]{3}$', message='Format must be AAA-000.')])
-    bomComponent = models.ForeignKey(ProvideComponent, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(BomUser, on_delete=models.CASCADE)
-    hyper_link = models.URLField(max_length=200, null=True, blank=True)
-
-    def __str__(self):
-        return self.code
     
 class ProvideFieldPermission(models.Model):
     instance_id = models.IntegerField(null=True, blank=True)
-    # FIELD_CHOISES = [
-    #     ("نوع درخواست (گزارش خرید/قرارداد)", "نوع درخواست (گزارش خرید/قرارداد)"),
-    #     ("مرحله تامین", "مرحله تامین"),
-    #     ("تامین كننده متریال", "تامین كننده متریال"),
-    #     ("شماره PR", "شماره PR"),
-    #     ("شماره PO", "شماره PO"),
-    #     ("موضوع", "موضوع"),
-    #     ("جنس درخواست", "جنس درخواست"),
-    #     ("مدیریت سفارش دهنده", "مدیریت سفارش دهنده"),
-    #     ("شماره قرارداد", "شماره قرارداد"),
-    #     ("تامین كننده", "تامین كننده"),
-    #     ("مبلغ", "مبلغ"),
-    #     ("مبلغ تعدیل", "مبلغ تعدیل"),
-    #     (" جمع مبلغ ", " جمع مبلغ "),
-    #     ("نوع ارز", "نوع ارز"),
-    #     ("كارشناس مسئول", "كارشناس مسئول"),
-    #     ("درصد پیش‌پرداخت", "درصد پیش‌پرداخت"),
-    #     ("مبلغ پیش‌پرداخت طبق قرارداد", "مبلغ پیش‌پرداخت طبق قرارداد"),
-    #     ("پیش پرداخت توسط توگا", "پیش پرداخت توسط توگا"),
-    #     ("پیش پرداخت توسط موتور هوایی", "پیش پرداخت توسط موتور هوایی"),
-    #     (" جمع پیش پرداخت ها- ریالی ", " جمع پیش پرداخت ها- ریالی "),
-    #     (" چك تضمین پیش پرداخت ", " چك تضمین پیش پرداخت "),
-    #     (" ضمانتنامه پیش پرداخت ", " ضمانتنامه پیش پرداخت "),
-    #     (" ضمانت نامه سند رهنی ", " ضمانت نامه سند رهنی "),
-    #     (" جمع ضمانت نامه های پیش پرداخت ", " جمع ضمانت نامه های پیش پرداخت "),
-    #     ("وضعیت در معاونت مالی", "وضعیت در معاونت مالی"),
-    #     ("تاریخ درخواست پیش پرداخت", "تاریخ درخواست پیش پرداخت"),
-    #     ("مبلغ پیش پرداخت", "مبلغ پیش پرداخت"),
-    #     ("نوع ارز", "نوع ارز"),
-    #     ("تاریخ پرداخت پیش پرداخت", "تاریخ پرداخت پیش پرداخت"),
-    # ]
     FIELD_CHOISES = [
         ("application_type", "application_type"),
         ("supply_stage", "supply_stage"),
@@ -636,3 +406,37 @@ class ProvideFieldPermission(models.Model):
 
     def __str__(self):
         return f"{self.group} {self.instance_id} {self.field}"
+    
+
+class OriginalReportCore(BomBaseModel):
+    original_report_id = models.IntegerField(null=True, blank=True)
+    fig_no = models.CharField(max_length=16, null=True, blank=True)
+    item_no = models.IntegerField(null=True, blank=True)
+    module = models.CharField(max_length=16, null=True, blank=True)
+    TUGA_subtitute_part_number = models.CharField(max_length=64, null=True, blank=True)
+    old_system_part_no = models.CharField(max_length=64, null=True, blank=True)
+    description = models.TextField(max_length=1024, null=True, blank=True)
+    unit_per_end_item = models.IntegerField(null=True, blank=True)
+    assembly = models.BooleanField(default=False, null=True, blank=True)
+    standard_part = models.BooleanField(default=False, null=True, blank=True)
+    new_manufacturing_responsible_department = models.CharField(
+        max_length=16, null=True, blank=True
+    )
+    level = models.CharField(max_length=32, null=True, blank=True)
+
+
+class Design(BomBaseModel):
+    disassembled = models.CharField(max_length=32, null=True, blank=True)
+    progress_certificate = models.CharField(max_length=32, null=True, blank=True)
+    ThreeD_scan_progress = models.CharField(max_length=32, null=True, blank=True)
+    ThreeD_scan_certificate = models.CharField(max_length=32, null=True, blank=True)
+    Fi_100_percent_l_modelling = models.CharField(max_length=32, null=True, blank=True)
+    Fi_100_percent_l_modelling_certificate = models.CharField(max_length=32, null=True, blank=True)
+    level_2_drawing = models.CharField(max_length=32, null=True, blank=True)
+    level_2_drawing_certificate = models.CharField(max_length=32, null=True, blank=True)
+    level_3_drawing = models.CharField(max_length=32, null=True, blank=True)
+    level_3_drawing_certificate = models.CharField(max_length=32, null=True, blank=True)
+    assembly_drawing = models.CharField(max_length=32, null=True, blank=True)
+    construction_plan_with_assembly_view = models.CharField(max_length=32, null=True, blank=True)
+    certificate_code = models.CharField(max_length=32, null=True, blank=True)
+

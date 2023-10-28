@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import numpy as np
 from django.contrib.auth.models import Group
@@ -60,7 +60,6 @@ class Login(TokenObtainPairView):
             httponly=True,
             secure=True,
             samesite="Strict",
-            expires=datetime.now() + timedelta(days=365)
         )
         res.set_cookie(
             key="refresh_token",
@@ -75,6 +74,9 @@ class Login(TokenObtainPairView):
 class Logout(APIView):
     def post(self, request, *args, **kwargs):
         res = Response({"detail": "Logout successful"}, status=status.HTTP_200_OK)
+        # res.set_cookie('access_token', '', expires='Thu, 01 Jan 1970 00:00:00 GMT')
+        # res.set_cookie('refresh_token', '', expires='Thu, 01 Jan 1970 00:00:00 GMT')
+
         res.delete_cookie("access_token")
         res.delete_cookie("refresh_token")
         return res

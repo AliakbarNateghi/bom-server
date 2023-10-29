@@ -51,6 +51,22 @@ from .serializers import (
 #     'page_number': CustomPageNumberPagination,
 # }
 
+correct_kwargs = [
+    "bom",
+    "provide",
+    "scope",
+    "core",
+    "design",
+    "lateral",
+    "manufacturing",
+    "2-devices-side",
+    "28-devices-side",
+    "2-devices-manufacturing",
+    "28-devices-manufacturing",
+    "2-devices-quality",
+    "28-devices-quality",
+]
+
 scope_kwargs = [
     "scope",
     "core",
@@ -68,12 +84,12 @@ scope_kwargs = [
 
 class InvalidTableException(APIException):
     status_code = 404
-    default_detail = "Invalid engine specified."
-    default_code = "invalid_engine"
+    default_detail = "Invalid table specified."
+    default_code = "invalid_table"
 
 
 def check_invalid_engine(engine):
-    if engine not in scope_kwargs:
+    if engine not in correct_kwargs:
         raise InvalidTableException()
 
 

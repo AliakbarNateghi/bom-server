@@ -8,6 +8,7 @@ from django.db.models import Prefetch, Q
 from django.http import QueryDict
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.exceptions import APIException
 from rest_framework.pagination import CursorPagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
@@ -22,13 +23,27 @@ from .models import (
     BomFieldPermission,
     ProvideComponent,
     ProvideFieldPermission,
+    ScopeMatrix,
+    ScopeMatrixFieldPermission,
 )
 from .serializers import (
     BomComponentSerializer,
     BomFieldPermissionSerializer,
+    DesignSerializer,
+    LateralSerializer,
+    ManufacturingSerializer,
     MassPermissionSerializer,
     ProvideComponentSerializer,
     ProvideFieldPermissionSerializer,
+    ScopeMatrixComponentSerializer,
+    ScopeMatrixFieldPermissionSerializer,
+    TwentyEightDevicesManufacturingSerializer,
+    TwentyEightDevicesQualitySerializer,
+    TwentyEightDevicesSideSerializer,
+    TwoDevicesManufacturingSerializer,
+    TwoDevicesQualitySerializer,
+    TwoDevicesSideSerializer,
+    originalCoreSerializer,
 )
 
 # PAGINATION_CLASSES = {
@@ -36,36 +51,331 @@ from .serializers import (
 #     'page_number': CustomPageNumberPagination,
 # }
 
+scope_kwargs = [
+    "scope",
+    "core",
+    "design",
+    "lateral",
+    "manufacturing",
+    "2-devices-side",
+    "28-devices-side",
+    "2-devices-manufacturing",
+    "28-devices-manufacturing",
+    "2-devices-quality",
+    "28-devices-quality",
+]
+
+
+class InvalidTableException(APIException):
+    status_code = 404
+    default_detail = "Invalid engine specified."
+    default_code = "invalid_engine"
+
+
+def check_invalid_engine(engine):
+    if engine not in scope_kwargs:
+        raise InvalidTableException()
+
 
 def find_permission_model(kwargs):
+    check_invalid_engine(kwargs)
     if kwargs == "bom":
         return BomFieldPermission.objects.all()
     elif kwargs == "provide":
         return ProvideFieldPermission.objects.all()
+    elif kwargs in scope_kwargs:
+        return ScopeMatrixFieldPermission.objects.all()
 
 
 def find_component_model(kwargs):
+    check_invalid_engine(kwargs)
     if kwargs == "bom":
         return BomComponent.objects.all()
     elif kwargs == "provide":
         return ProvideComponent.objects.all()
+    elif kwargs in scope_kwargs:
+        return ScopeMatrix.objects.all()
+
+
+def find_permission_serializer(kwargs):
+    check_invalid_engine(kwargs)
+    if kwargs == "bom":
+        return BomFieldPermissionSerializer
+    elif kwargs == "provide":
+        return ProvideFieldPermissionSerializer
+    elif kwargs in scope_kwargs:
+        return ScopeMatrixFieldPermissionSerializer
+
+
+def find_component_serializer(kwargs):
+    check_invalid_engine(kwargs)
+    if kwargs == "bom":
+        return BomComponentSerializer
+    elif kwargs == "provide":
+        return ProvideComponentSerializer
+    elif kwargs == "core":
+        return originalCoreSerializer
+    elif kwargs == "design":
+        return DesignSerializer
+    elif kwargs == "lateral":
+        return LateralSerializer
+    elif kwargs == "manufacturing":
+        return ManufacturingSerializer
+    elif kwargs == "2-devices-side":
+        return TwoDevicesSideSerializer
+    elif kwargs == "28-devices-side":
+        return TwentyEightDevicesSideSerializer
+    elif kwargs == "2-devices-manufacturing":
+        return TwoDevicesManufacturingSerializer
+    elif kwargs == "28-devices-manufacturing":
+        return TwentyEightDevicesManufacturingSerializer
+    elif kwargs == "2-devices-quality":
+        return TwoDevicesQualitySerializer
+    elif kwargs == "28-devices-quality":
+        return TwentyEightDevicesQualitySerializer
 
 
 class Component(ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomCursorPagination
+    scope_fields_to_return = []
+
+    common_fields = [
+        "id",
+        "original_report_id",
+        "fig_no",
+        "item_no",
+        "module",
+        "TUGA_subtitute_part_number",
+        "old_system_part_no",
+        "description",
+        "unit_per_end_item",
+        "assembly",
+        "standard_part",
+        "new_manufacturing_responsible_department",
+        "level",
+    ]
+
+    def scope_fields_to_return_func(self):
+        if self.kwargs["table"] == "core":
+            self.scope_fields_to_return = self.common_fields + [
+                "disassembled",
+                "progress_certificate",
+                "ThreeD_scan_progress",
+                "ThreeD_scan_certificate",
+                "Fi_100_percent_l_modelling",
+                "Fi_100_percent_l_modelling_certificate",
+                "level_2_drawing",
+                "level_2_drawing_certificate",
+                "level_3_drawing",
+                "level_3_drawing_certificate",
+                "assembly_drawing",
+                "construction_plan_with_assembly_view",
+                "identification_report_metallurgical_notebook_of_the_piece",
+                "identification_report_metallurgical_notebook_of_the_piece_certi",
+                "raw_material_spec",
+                "raw_material_spec_certificate",
+                "part_spec",
+                "part_spec_certificate",
+                "cover_spec",
+                "cover_spec_certificate",
+                "connections_spec",
+                "connections_spec_certificate",
+                "other_specs_complementary_operations",
+                "other_specs_certificate",
+                "interprocess_maps",
+                "interprocess_maps_certificate",
+                "OPC_or_MPP_rating",
+                "rating_certificate",
+                "TP",
+                "TP_certificate",
+                "MQCP",
+                "MQCP_certificate",
+                "ITP",
+                "ITP_certificate",
+                "contract",
+                "_2_manufacturing_total_progress",
+                "_28_manufacturing_total_progress",
+                "_2_quality_total_progress",
+                "_28_quality_total_progress",
+            ]
+        elif self.kwargs["table"] == "design":
+            self.scope_fields_to_return = self.common_fields + [
+                "disassembled",
+                "progress_certificate",
+                "ThreeD_scan_progress",
+                "ThreeD_scan_certificate",
+                "Fi_100_percent_l_modelling",
+                "Fi_100_percent_l_modelling_certificate",
+                "level_2_drawing",
+                "level_2_drawing_certificate",
+                "level_3_drawing",
+                "level_3_drawing_certificate",
+                "assembly_drawing",
+                "construction_plan_with_assembly_view",
+                "certificate_code",
+            ]
+        elif self.kwargs["table"] == "lateral":
+            self.scope_fields_to_return = self.common_fields + [
+                "disassembled",
+                "progress_certificate",
+                "ThreeD_scan_progress",
+                "ThreeD_scan_certificate",
+                "Fi_100_percent_l_modelling",
+                "Fi_100_percent_l_modelling_certificate",
+                "level_2_drawing",
+                "level_2_drawing_certificate",
+                "level_3_drawing",
+                "level_3_drawing_certificate",
+                "assembly_drawing",
+                "construction_plan_with_assembly_view",
+                "certificate_code",
+                "identification_report_metallurgical_notebook_of_the_piece",
+                "identification_report_metallurgical_notebook_of_the_piece_certi",
+                "raw_material_spec",
+                "raw_material_spec_certificate",
+                "part_spec",
+                "part_spec_certificate",
+                "cover_spec",
+                "cover_spec_certificate",
+                "connections_spec",
+                "connections_spec_certificate",
+                "other_specs_complementary_operations",
+                "other_specs_certificate",
+                "interprocess_maps",
+                "interprocess_maps_certificate",
+                "OPC_or_MPP_rating",
+                "rating_certificate",
+                "TP",
+                "TP_certificate",
+                "MQCP",
+                "MQCP_certificate",
+                "ITP",
+                "ITP_certificate",
+            ]
+        elif self.kwargs["table"] == "manufacturing":
+            self.scope_fields_to_return = self.common_fields + [
+                "identification_report_metallurgical_notebook_of_the_piece",
+                "identification_report_metallurgical_notebook_of_the_piece_certi",
+                "raw_material_spec",
+                "raw_material_spec_certificate",
+                "part_spec",
+                "part_spec_certificate",
+                "cover_spec",
+                "cover_spec_certificate",
+                "connections_spec",
+                "connections_spec_certificate",
+                "other_specs_complementary_operations",
+                "other_specs_certificate",
+                "interprocess_maps",
+                "interprocess_maps_certificate",
+                "OPC_or_MPP_rating",
+                "rating_certificate",
+                "TP",
+                "TP_certificate",
+                "MQCP",
+                "MQCP_certificate",
+                "ITP",
+                "ITP_certificate",
+            ]
+        elif self.kwargs["table"] == "2-devices-side":
+            self.scope_fields_to_return = self.common_fields + [
+                "_3885",
+                "contract",
+                "adv_payment",
+                "material_supply",
+                "mold_or_die_or_fixture",
+                "casting",
+                "forge",
+                "forming",
+                "machining",
+                "brazing_or_welding",
+                "coating",
+                "dummy_sample",
+                "first_articles",
+                "first_articles_test",
+                "_2_side_total_progress",
+            ]
+        elif self.kwargs["table"] == "28-devices-side":
+            self.scope_fields_to_return = self.common_fields + [
+                "_3885",
+                "contract",
+                "adv_payment",
+                "material_supply",
+                "mold_or_die_or_fixture",
+                "casting",
+                "forge",
+                "forming",
+                "machining",
+                "brazing_or_welding",
+                "coating",
+                "mass_production",
+                "_28_side_total_progress",
+            ]
+        elif self.kwargs["table"] == "2-devices-manufacturing":
+            self.scope_fields_to_return = self.common_fields + [
+                "_3885",
+                "contract",
+                "adv_payment",
+                "material_supply",
+                "mold_or_die_or_fixture",
+                "casting",
+                "forge",
+                "forming",
+                "machining",
+                "brazing_or_welding",
+                "coating",
+                "dummy_sample",
+                "first_articles",
+                "first_articles_test",
+                "_2_manufacturing_total_progress",
+            ]
+        elif self.kwargs["table"] == "28-devices-manufacturing":
+            self.scope_fields_to_return = self.common_fields + [
+                "_3885",
+                "contract",
+                "adv_payment",
+                "material_supply",
+                "mold_or_die_or_fixture",
+                "casting",
+                "forge",
+                "forming",
+                "machining",
+                "brazing_or_welding",
+                "coating",
+                "mass_production",
+                "_28_manufacturing_total_progress",
+            ]
+        elif self.kwargs["table"] == "2-devices-quality":
+            self.scope_fields_to_return = self.common_fields + [
+                "review_and_ITP_approval_4_percent",
+                "qualitative_evaluation_the_contractor_2_percent",
+                "kick_off_meeting_3_percent",
+                "CDR_5_percent",
+                "compliant_quality_inspection_ITP_or_MQCP_65_percent",
+                "submitting_an_inspection_report_accept_or_NCR_7_percent",
+                "check_the_answer_design_to_NCR_5_percent",
+                "issuing_quality_tag_2_percent",
+                "compilation_and_approval_final_book_5_percent",
+                "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
+                "_2_quality_total_progress",
+            ]
+        elif self.kwargs["table"] == "28-devices-quality":
+            self.scope_fields_to_return = self.common_fields + [
+                "compliant_quality_inspection_ITP_or_MQCP_75_percent",
+                "submitting_an_inspection_report_accept_or_NCR_12_percent",
+                "check_the_answer_design_to_NCR_3_percent",
+                "issuing_quality_tag_2_percent",
+                "compilation_and_approval_final_book_6_percent",
+                "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
+                "_28_quality_total_progress",
+            ]
 
     def get_queryset(self):
-        if self.kwargs["table"] == "bom":
-            return BomComponent.objects.all()
-        elif self.kwargs["table"] == "provide":
-            return ProvideComponent.objects.all()
+        return find_component_model(self.kwargs["table"])
 
     def get_serializer_class(self):
-        if self.kwargs["table"] == "bom":
-            return BomComponentSerializer
-        elif self.kwargs["table"] == "provide":
-            return ProvideComponentSerializer
+        return find_component_serializer(self.kwargs["table"])
 
     """
         page number pagination
@@ -73,6 +383,7 @@ class Component(ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         permission_model = find_permission_model(self.kwargs["table"])
+
         user = self.request.user
         groups = user.groups.all()
         page = (
@@ -87,9 +398,15 @@ class Component(ModelViewSet):
             instances.values_list("instance_id", flat=True).distinct(), 100
         )
         instance_ids = paginator.get_page(page)
-        instances = instances.filter(instance_id__in=instance_ids)
+
+        self.scope_fields_to_return_func()
+        fields_to_return = self.scope_fields_to_return
+        instances = instances.filter(
+            instance_id__in=instance_ids, field__in=fields_to_return
+        )
         raw_queryset = self.get_queryset()
-        queryset = raw_queryset.filter(id__in=instance_ids)
+        queryset = raw_queryset.filter(id__in=instance_ids).values(*fields_to_return)
+
         queryset_dict = {}
         editable_dict = {}
         count = 0
@@ -104,7 +421,8 @@ class Component(ModelViewSet):
                     queryset_dict[id] = {"id": id}
                     editable_dict[id] = {"id": id}
                 # queryset_dict[id][field] = json.loads(serializers.serialize('json', [getattr(obj, field), ]))[0]["fields"]["name"] if type(getattr(obj, field)) == Department else getattr(obj, field)
-                queryset_dict[id][field] = getattr(obj, field) if field != None else None              
+                queryset_dict[id][field] = obj[field] if field != None else None
+                # queryset_dict[id][field] = getattr(obj, field) if field != None else None
                 editable_dict[id][field] = editable
             except queryset.model.DoesNotExist:
                 pass
@@ -234,16 +552,10 @@ class FieldPermissionView(ModelViewSet):
     permission_classes = [IsAuthenticated, IsGod, IsAdminUser]
 
     def get_queryset(self):
-        if self.kwargs["table"] == "bom":
-            return BomFieldPermission.objects.all()
-        elif self.kwargs["table"] == "provide":
-            return ProvideFieldPermission.objects.all()
+        return find_permission_model(self.kwargs["table"])
 
     def get_serializer_class(self):
-        if self.kwargs["table"] == "bom":
-            return BomFieldPermissionSerializer
-        elif self.kwargs["table"] == "provide":
-            return ProvideFieldPermissionSerializer
+        return find_permission_serializer(self.kwargs["table"])
 
     def list(self, request, *args, **kwargs):
         group = (
@@ -338,19 +650,10 @@ class MassPermissionViewSet(
     GenericViewSet,
 ):
     serializer_class = MassPermissionSerializer
+    permission_classes = [IsAuthenticated, IsGod, IsAdminUser]
 
     def get_queryset(self):
-        if self.kwargs["table"] == "bom":
-            return BomFieldPermission.objects.all()
-        elif self.kwargs["table"] == "provide":
-            return ProvideFieldPermission.objects.all()
-
-    # def get_serializer_class(self):
-    #     if self.kwargs['table'] == 'bom':
-    #         return BomComponentSerializer
-    #     elif self.kwargs['table'] == 'provide':
-    #         return ProvideComponentSerializer
-    permission_classes = [IsAuthenticated, IsGod, IsAdminUser]
+        return find_permission_model(self.kwargs["table"])
 
     def create(self, request, *args, **kwargs):
         component = find_component_model(self.kwargs["table"])

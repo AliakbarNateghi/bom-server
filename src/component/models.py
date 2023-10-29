@@ -408,7 +408,7 @@ class ProvideFieldPermission(models.Model):
         return f"{self.group} {self.instance_id} {self.field}"
 
 
-class OriginalReportCore(BomBaseModel):
+class ScopeMatrix(BomBaseModel):
     original_report_id = models.IntegerField(null=True, blank=True)
     fig_no = models.CharField(max_length=16, null=True, blank=True)
     item_no = models.IntegerField(null=True, blank=True)
@@ -423,39 +423,6 @@ class OriginalReportCore(BomBaseModel):
         max_length=16, null=True, blank=True
     )
     level = models.CharField(max_length=32, null=True, blank=True)
-
-
-class OriginalReportCoreFieldPermission(models.Model):
-    instance_id = models.IntegerField(null=True, blank=True)
-    FIELD_CHOISES = [
-        ("original_report_id", "original_report_id"),
-        ("fig_no", "fig_no"),
-        ("item_no", "item_no"),
-        ("module", "module"),
-        ("TUGA_subtitute_part_number", "TUGA_subtitute_part_number"),
-        ("old_system_part_no", "old_system_part_no"),
-        ("description", "description"),
-        ("unit_per_end_item", "unit_per_end_item"),
-        ("assembly", "assembly"),
-        ("standard_part", "standard_part"),
-        (
-            "new_manufacturing_responsible_department",
-            "new_manufacturing_responsible_department",
-        ),
-        ("level", "level"),
-    ]
-    field = models.CharField(
-        max_length=128, null=True, blank=True, choices=FIELD_CHOISES
-    )
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    editable = models.BooleanField()
-
-    def __str__(self):
-        return f"{self.group} {self.instance_id} {self.field}"
-
-
-class Design(BomBaseModel):
-    # Design / Lateral #
     disassembled = models.CharField(max_length=32, null=True, blank=True)
     progress_certificate = models.CharField(max_length=32, null=True, blank=True)
     ThreeD_scan_progress = models.CharField(max_length=32, null=True, blank=True)
@@ -473,44 +440,6 @@ class Design(BomBaseModel):
         max_length=32, null=True, blank=True
     )
     certificate_code = models.CharField(max_length=32, null=True, blank=True)
-    # Design / Lateral #
-
-
-class DesignFieldPermission(models.Model):
-    instance_id = models.IntegerField(null=True, blank=True)
-    FIELD_CHOISES = [
-        ("disassembled", "disassembled"),
-        ("progress_certificate", "progress_certificate"),
-        ("ThreeD_scan_progress", "ThreeD_scan_progress"),
-        ("ThreeD_scan_certificate", "ThreeD_scan_certificate"),
-        ("Fi_100_percent_l_modelling", "Fi_100_percent_l_modelling"),
-        (
-            "Fi_100_percent_l_modelling_certificate",
-            "Fi_100_percent_l_modelling_certificate",
-        ),
-        ("level_2_drawing", "level_2_drawing"),
-        ("level_2_drawing_certificate", "level_2_drawing_certificate"),
-        ("level_3_drawing", "level_3_drawing"),
-        ("level_3_drawing_certificate", "level_3_drawing_certificate"),
-        ("assembly_drawing", "assembly_drawing"),
-        (
-            "construction_plan_with_assembly_view",
-            "construction_plan_with_assembly_view",
-        ),
-        ("certificate_code", "certificate_code"),
-    ]
-    field = models.CharField(
-        max_length=128, null=True, blank=True, choices=FIELD_CHOISES
-    )
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    editable = models.BooleanField()
-
-    def __str__(self):
-        return f"{self.group} {self.instance_id} {self.field}"
-
-
-class Manufacturing(BomBaseModel):
-    # Lateral / Manufacturing #
     identification_report_metallurgical_notebook_of_the_piece = models.CharField(
         max_length=32, null=True, blank=True
     )
@@ -545,12 +474,114 @@ class Manufacturing(BomBaseModel):
     MQCP_certificate = models.CharField(max_length=128, null=True, blank=True)
     ITP = models.CharField(max_length=128, null=True, blank=True)
     ITP_certificate = models.CharField(max_length=128, null=True, blank=True)
-    # Lateral / Manufacturing #
+    _3885 = models.CharField(max_length=128, null=True, blank=True)
+    contract = models.CharField(max_length=32, null=True, blank=True)
+    adv_payment = models.CharField(max_length=128, null=True, blank=True)
+    material_supply = models.CharField(max_length=128, null=True, blank=True)
+    mold_or_die_or_fixture = models.CharField(max_length=128, null=True, blank=True)
+    casting = models.CharField(max_length=128, null=True, blank=True)
+    forge = models.CharField(max_length=128, null=True, blank=True)
+    forming = models.CharField(max_length=128, null=True, blank=True)
+    machining = models.CharField(max_length=128, null=True, blank=True)
+    brazing_or_welding = models.CharField(max_length=128, null=True, blank=True)
+    coating = models.CharField(max_length=128, null=True, blank=True)
+    _2_manufacturing_total_progress = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    _28_manufacturing_total_progress = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    _2_side_total_progress = models.CharField(max_length=128, null=True, blank=True)
+    _28_side_total_progress = models.CharField(max_length=128, null=True, blank=True)
+    dummy_sample = models.CharField(max_length=128, null=True, blank=True)
+    first_articles = models.CharField(max_length=128, null=True, blank=True)
+    first_articles_test = models.CharField(max_length=128, null=True, blank=True)
+    mass_production = models.CharField(max_length=128, null=True, blank=True)
+    review_and_ITP_approval_4_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    qualitative_evaluation_the_contractor_2_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    kick_off_meeting_3_percent = models.CharField(max_length=128, null=True, blank=True)
+    CDR_5_percent = models.CharField(max_length=128, null=True, blank=True)
+    compliant_quality_inspection_ITP_or_MQCP_65_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    submitting_an_inspection_report_accept_or_NCR_7_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    check_the_answer_design_to_NCR_5_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    issuing_quality_tag_2_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    compilation_and_approval_final_book_5_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    issuance_of_test_certificate_or_Form1_or_CoC_2_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    _2_quality_total_progress = models.CharField(max_length=32, null=True, blank=True)
+    compliant_quality_inspection_ITP_or_MQCP_75_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    submitting_an_inspection_report_accept_or_NCR_12_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    check_the_answer_design_to_NCR_3_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    issuing_quality_tag_2_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    compilation_and_approval_final_book_6_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    issuance_of_test_certificate_or_Form1_or_CoC_2_percent = models.CharField(
+        max_length=128, null=True, blank=True
+    )
+    _28_quality_total_progress = models.CharField(max_length=32, null=True, blank=True)
 
 
-class ManufacturingFieldPermission(models.Model):
+class ScopeMatrixFieldPermission(BomBaseModel):
     instance_id = models.IntegerField(null=True, blank=True)
     FIELD_CHOISES = [
+        ("original_report_id", "original_report_id"),
+        ("fig_no", "fig_no"),
+        ("item_no", "item_no"),
+        ("module", "module"),
+        ("TUGA_subtitute_part_number", "TUGA_subtitute_part_number"),
+        ("old_system_part_no", "old_system_part_no"),
+        ("description", "description"),
+        ("unit_per_end_item", "unit_per_end_item"),
+        ("assembly", "assembly"),
+        ("standard_part", "standard_part"),
+        (
+            "new_manufacturing_responsible_department",
+            "new_manufacturing_responsible_department",
+        ),
+        ("level", "level"),
+        ("disassembled", "disassembled"),
+        ("progress_certificate", "progress_certificate"),
+        ("ThreeD_scan_progress", "ThreeD_scan_progress"),
+        ("ThreeD_scan_certificate", "ThreeD_scan_certificate"),
+        ("Fi_100_percent_l_modelling", "Fi_100_percent_l_modelling"),
+        (
+            "Fi_100_percent_l_modelling_certificate",
+            "Fi_100_percent_l_modelling_certificate",
+        ),
+        ("level_2_drawing", "level_2_drawing"),
+        ("level_2_drawing_certificate", "level_2_drawing_certificate"),
+        ("level_3_drawing", "level_3_drawing"),
+        ("level_3_drawing_certificate", "level_3_drawing_certificate"),
+        ("assembly_drawing", "assembly_drawing"),
+        (
+            "construction_plan_with_assembly_view",
+            "construction_plan_with_assembly_view",
+        ),
+        ("certificate_code", "certificate_code"),
         (
             "identification_report_metallurgical_notebook_of_the_piece",
             "identification_report_metallurgical_notebook_of_the_piece",
@@ -582,6 +613,76 @@ class ManufacturingFieldPermission(models.Model):
         ("MQCP_certificate", "MQCP_certificate"),
         ("ITP", "ITP"),
         ("ITP_certificate", "ITP_certificate"),
+        ("_3885", "_3885"),
+        ("contract", "contract"),
+        ("adv_payment", "adv_payment"),
+        ("material_supply", "material_supply"),
+        ("mold_or_die_or_fixture", "mold_or_die_or_fixture"),
+        ("casting", "casting"),
+        ("forge", "forge"),
+        ("forming", "forming"),
+        ("machining", "machining"),
+        ("brazing_or_welding", "brazing_or_welding"),
+        ("coating", "coating"),
+        ("_2_manufacturing_total_progress", "_2_manufacturing_total_progress"),
+        ("_28_manufacturing_total_progress", "_28_manufacturing_total_progress"),
+        ("_2_side_total_progress", "_2_side_total_progress"),
+        ("_28_side_total_progress", "_28_side_total_progress"),
+        ("dummy_sample", "dummy_sample"),
+        ("first_articles", "first_articles"),
+        ("first_articles_test", "first_articles_test"),
+        ("mass_production", "mass_production"),
+        ("review_and_ITP_approval_4_percent", "review_and_ITP_approval_4_percent"),
+        (
+            "qualitative_evaluation_the_contractor_2_percent",
+            "qualitative_evaluation_the_contractor_2_percent",
+        ),
+        ("kick_off_meeting_3_percent", "kick_off_meeting_3_percent"),
+        ("CDR_5_percent", "CDR_5_percent"),
+        (
+            "compliant_quality_inspection_ITP_or_MQCP_65_percent",
+            "compliant_quality_inspection_ITP_or_MQCP_65_percent",
+        ),
+        (
+            "submitting_an_inspection_report_accept_or_NCR_7_percent",
+            "submitting_an_inspection_report_accept_or_NCR_7_percent",
+        ),
+        (
+            "check_the_answer_design_to_NCR_5_percent",
+            "check_the_answer_design_to_NCR_5_percent",
+        ),
+        ("issuing_quality_tag_2_percent", "issuing_quality_tag_2_percent"),
+        (
+            "compilation_and_approval_final_book_5_percent",
+            "compilation_and_approval_final_book_5_percent",
+        ),
+        (
+            "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
+            "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
+        ),
+        ("_2_quality_total_progress", "_2_quality_total_progress"),
+        (
+            "compliant_quality_inspection_ITP_or_MQCP_75_percent",
+            "compliant_quality_inspection_ITP_or_MQCP_75_percent",
+        ),
+        (
+            "submitting_an_inspection_report_accept_or_NCR_12_percent",
+            "submitting_an_inspection_report_accept_or_NCR_12_percent",
+        ),
+        (
+            "check_the_answer_design_to_NCR_3_percent",
+            "check_the_answer_design_to_NCR_3_percent",
+        ),
+        ("issuing_quality_tag_2_percent", "issuing_quality_tag_2_percent"),
+        (
+            "compilation_and_approval_final_book_6_percent",
+            "compilation_and_approval_final_book_6_percent",
+        ),
+        (
+            "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
+            "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
+        ),
+        ("_28_quality_total_progress", "_28_quality_total_progress"),
     ]
     field = models.CharField(
         max_length=128, null=True, blank=True, choices=FIELD_CHOISES
@@ -591,6 +692,191 @@ class ManufacturingFieldPermission(models.Model):
 
     def __str__(self):
         return f"{self.group} {self.instance_id} {self.field}"
+
+
+# class OriginalReportCore(BomBaseModel):
+#     original_report_id = models.IntegerField(null=True, blank=True)
+#     fig_no = models.CharField(max_length=16, null=True, blank=True)
+#     item_no = models.IntegerField(null=True, blank=True)
+#     module = models.CharField(max_length=16, null=True, blank=True)
+#     TUGA_subtitute_part_number = models.CharField(max_length=64, null=True, blank=True)
+#     old_system_part_no = models.CharField(max_length=64, null=True, blank=True)
+#     description = models.TextField(max_length=1024, null=True, blank=True)
+#     unit_per_end_item = models.IntegerField(null=True, blank=True)
+#     assembly = models.BooleanField(default=False, null=True, blank=True)
+#     standard_part = models.BooleanField(default=False, null=True, blank=True)
+#     new_manufacturing_responsible_department = models.CharField(
+#         max_length=16, null=True, blank=True
+#     )
+#     level = models.CharField(max_length=32, null=True, blank=True)
+
+
+# class OriginalReportCoreFieldPermission(models.Model):
+#     instance_id = models.IntegerField(null=True, blank=True)
+#     FIELD_CHOISES = [
+#         ("original_report_id", "original_report_id"),
+#         ("fig_no", "fig_no"),
+#         ("item_no", "item_no"),
+#         ("module", "module"),
+#         ("TUGA_subtitute_part_number", "TUGA_subtitute_part_number"),
+#         ("old_system_part_no", "old_system_part_no"),
+#         ("description", "description"),
+#         ("unit_per_end_item", "unit_per_end_item"),
+#         ("assembly", "assembly"),
+#         ("standard_part", "standard_part"),
+#         (
+#             "new_manufacturing_responsible_department",
+#             "new_manufacturing_responsible_department",
+#         ),
+#         ("level", "level"),
+#     ]
+#     field = models.CharField(
+#         max_length=128, null=True, blank=True, choices=FIELD_CHOISES
+#     )
+#     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+#     editable = models.BooleanField()
+
+#     def __str__(self):
+#         return f"{self.group} {self.instance_id} {self.field}"
+
+
+# class Design(BomBaseModel):
+#     # Design / Lateral #
+#     disassembled = models.CharField(max_length=32, null=True, blank=True)
+#     progress_certificate = models.CharField(max_length=32, null=True, blank=True)
+#     ThreeD_scan_progress = models.CharField(max_length=32, null=True, blank=True)
+#     ThreeD_scan_certificate = models.CharField(max_length=32, null=True, blank=True)
+#     Fi_100_percent_l_modelling = models.CharField(max_length=32, null=True, blank=True)
+#     Fi_100_percent_l_modelling_certificate = models.CharField(
+#         max_length=32, null=True, blank=True
+#     )
+#     level_2_drawing = models.CharField(max_length=32, null=True, blank=True)
+#     level_2_drawing_certificate = models.CharField(max_length=32, null=True, blank=True)
+#     level_3_drawing = models.CharField(max_length=32, null=True, blank=True)
+#     level_3_drawing_certificate = models.CharField(max_length=32, null=True, blank=True)
+#     assembly_drawing = models.CharField(max_length=32, null=True, blank=True)
+#     construction_plan_with_assembly_view = models.CharField(
+#         max_length=32, null=True, blank=True
+#     )
+#     certificate_code = models.CharField(max_length=32, null=True, blank=True)
+#     # Design / Lateral #
+
+
+# class DesignFieldPermission(models.Model):
+#     instance_id = models.IntegerField(null=True, blank=True)
+#     FIELD_CHOISES = [
+#         ("disassembled", "disassembled"),
+#         ("progress_certificate", "progress_certificate"),
+#         ("ThreeD_scan_progress", "ThreeD_scan_progress"),
+#         ("ThreeD_scan_certificate", "ThreeD_scan_certificate"),
+#         ("Fi_100_percent_l_modelling", "Fi_100_percent_l_modelling"),
+#         (
+#             "Fi_100_percent_l_modelling_certificate",
+#             "Fi_100_percent_l_modelling_certificate",
+#         ),
+#         ("level_2_drawing", "level_2_drawing"),
+#         ("level_2_drawing_certificate", "level_2_drawing_certificate"),
+#         ("level_3_drawing", "level_3_drawing"),
+#         ("level_3_drawing_certificate", "level_3_drawing_certificate"),
+#         ("assembly_drawing", "assembly_drawing"),
+#         (
+#             "construction_plan_with_assembly_view",
+#             "construction_plan_with_assembly_view",
+#         ),
+#         ("certificate_code", "certificate_code"),
+#     ]
+#     field = models.CharField(
+#         max_length=128, null=True, blank=True, choices=FIELD_CHOISES
+#     )
+#     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+#     editable = models.BooleanField()
+
+#     def __str__(self):
+#         return f"{self.group} {self.instance_id} {self.field}"
+
+
+# class Manufacturing(BomBaseModel):
+#     # Lateral / Manufacturing #
+#     identification_report_metallurgical_notebook_of_the_piece = models.CharField(
+#         max_length=32, null=True, blank=True
+#     )
+#     identification_report_metallurgical_notebook_of_the_piece_certi = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     raw_material_spec = models.CharField(max_length=128, null=True, blank=True)
+#     raw_material_spec_certificate = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     part_spec = models.CharField(max_length=128, null=True, blank=True)
+#     part_spec_certificate = models.CharField(max_length=128, null=True, blank=True)
+#     cover_spec = models.CharField(max_length=128, null=True, blank=True)
+#     cover_spec_certificate = models.CharField(max_length=128, null=True, blank=True)
+#     connections_spec = models.CharField(max_length=128, null=True, blank=True)
+#     connections_spec_certificate = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     other_specs_complementary_operations = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     other_specs_certificate = models.CharField(max_length=128, null=True, blank=True)
+#     interprocess_maps = models.CharField(max_length=128, null=True, blank=True)
+#     interprocess_maps_certificate = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     OPC_or_MPP_rating = models.CharField(max_length=128, null=True, blank=True)
+#     rating_certificate = models.CharField(max_length=128, null=True, blank=True)
+#     TP = models.CharField(max_length=32, null=True, blank=True)
+#     TP_certificate = models.CharField(max_length=128, null=True, blank=True)
+#     MQCP = models.CharField(max_length=128, null=True, blank=True)
+#     MQCP_certificate = models.CharField(max_length=128, null=True, blank=True)
+#     ITP = models.CharField(max_length=128, null=True, blank=True)
+#     ITP_certificate = models.CharField(max_length=128, null=True, blank=True)
+#     # Lateral / Manufacturing #
+
+
+# class ManufacturingFieldPermission(models.Model):
+#     instance_id = models.IntegerField(null=True, blank=True)
+#     FIELD_CHOISES = [
+#         (
+#             "identification_report_metallurgical_notebook_of_the_piece",
+#             "identification_report_metallurgical_notebook_of_the_piece",
+#         ),
+#         (
+#             "identification_report_metallurgical_notebook_of_the_piece_certi",
+#             "identification_report_metallurgical_notebook_of_the_piece_certi",
+#         ),
+#         ("raw_material_spec", "raw_material_spec"),
+#         ("raw_material_spec_certificate", "raw_material_spec_certificate"),
+#         ("part_spec", "part_spec"),
+#         ("part_spec_certificate", "part_spec_certificate"),
+#         ("cover_spec", "cover_spec"),
+#         ("cover_spec_certificate", "cover_spec_certificate"),
+#         ("connections_spec", "connections_spec"),
+#         ("connections_spec_certificate", "connections_spec_certificate"),
+#         (
+#             "other_specs_complementary_operations",
+#             "other_specs_complementary_operations",
+#         ),
+#         ("other_specs_certificate", "other_specs_certificate"),
+#         ("interprocess_maps", "interprocess_maps"),
+#         ("interprocess_maps_certificate", "interprocess_maps_certificate"),
+#         ("OPC_or_MPP_rating", "OPC_or_MPP_rating"),
+#         ("rating_certificate", "rating_certificate"),
+#         ("TP", "TP"),
+#         ("TP_certificate", "TP_certificate"),
+#         ("MQCP", "MQCP"),
+#         ("MQCP_certificate", "MQCP_certificate"),
+#         ("ITP", "ITP"),
+#         ("ITP_certificate", "ITP_certificate"),
+#     ]
+#     field = models.CharField(
+#         max_length=128, null=True, blank=True, choices=FIELD_CHOISES
+#     )
+#     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+#     editable = models.BooleanField()
+
+#     def __str__(self):
+#         return f"{self.group} {self.instance_id} {self.field}"
 
 
 # class Lateral(BomBaseModel):
@@ -635,94 +921,94 @@ class ManufacturingFieldPermission(models.Model):
 #     # Lateral / Manufacturing #
 
 
-class TwoDevicesSide(BomBaseModel):
-    # TwoDevicesSide / TwoDevicesConstruction #
+# class TwoDevicesSide(BomBaseModel):
+#     # TwoDevicesSide / TwoDevicesConstruction #
 
-    # TwoDevicesSide / TwentyEightDevicesSide / TwoDevicesConstruction / TwentyEightDevicesConstruction #
-    _3885 = models.CharField(max_length=128, null=True, blank=True)
-    contract = models.CharField(max_length=32, null=True, blank=True)
-    adv_payment = models.CharField(max_length=128, null=True, blank=True)
-    material_supply = models.CharField(max_length=128, null=True, blank=True)
-    mold_or_die_or_fixture = models.CharField(max_length=128, null=True, blank=True)
-    casting = models.CharField(max_length=128, null=True, blank=True)
-    forge = models.CharField(max_length=128, null=True, blank=True)
-    forming = models.CharField(max_length=128, null=True, blank=True)
-    machining = models.CharField(max_length=128, null=True, blank=True)
-    brazing_or_welding = models.CharField(max_length=128, null=True, blank=True)
-    coating = models.CharField(max_length=128, null=True, blank=True)
-    total_progress = models.CharField(max_length=128, null=True, blank=True)
-    # TwoDevicesSide / TwentyEightDevicesSide / TwoDevicesConstruction / TwentyEightDevicesConstruction #
+#     # TwoDevicesSide / TwentyEightDevicesSide / TwoDevicesConstruction / TwentyEightDevicesConstruction #
+#     _3885 = models.CharField(max_length=128, null=True, blank=True)
+#     contract = models.CharField(max_length=32, null=True, blank=True)
+#     adv_payment = models.CharField(max_length=128, null=True, blank=True)
+#     material_supply = models.CharField(max_length=128, null=True, blank=True)
+#     mold_or_die_or_fixture = models.CharField(max_length=128, null=True, blank=True)
+#     casting = models.CharField(max_length=128, null=True, blank=True)
+#     forge = models.CharField(max_length=128, null=True, blank=True)
+#     forming = models.CharField(max_length=128, null=True, blank=True)
+#     machining = models.CharField(max_length=128, null=True, blank=True)
+#     brazing_or_welding = models.CharField(max_length=128, null=True, blank=True)
+#     coating = models.CharField(max_length=128, null=True, blank=True)
+#     total_progress = models.CharField(max_length=128, null=True, blank=True)
+#     # TwoDevicesSide / TwentyEightDevicesSide / TwoDevicesConstruction / TwentyEightDevicesConstruction #
 
-    dummy_sample = models.CharField(max_length=128, null=True, blank=True)
-    first_articles = models.CharField(max_length=128, null=True, blank=True)
-    first_articles_test = models.CharField(max_length=128, null=True, blank=True)
-    # TwoDevicesSide / TwoDevicesConstruction #
-
-
-class TwoDevicesSideFieldPermission(models.Model):
-    instance_id = models.IntegerField(null=True, blank=True)
-    FIELD_CHOISES = [
-        ("_3885", "_3885"),
-        ("contract", "contract"),
-        ("adv_payment", "adv_payment"),
-        ("material_supply", "material_supply"),
-        ("mold_or_die_or_fixture", "mold_or_die_or_fixture"),
-        ("casting", "casting"),
-        ("forge", "forge"),
-        ("forming", "forming"),
-        ("machining", "machining"),
-        ("brazing_or_welding", "brazing_or_welding"),
-        ("coating", "coating"),
-        ("total_progress", "total_progress"),
-        ("dummy_sample", "dummy_sample"),
-        ("first_articles", "first_articles"),
-        ("first_articles_test", "first_articles_test"),
-    ]
-    field = models.CharField(
-        max_length=128, null=True, blank=True, choices=FIELD_CHOISES
-    )
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    editable = models.BooleanField()
-
-    def __str__(self):
-        return f"{self.group} {self.instance_id} {self.field}"
+#     dummy_sample = models.CharField(max_length=128, null=True, blank=True)
+#     first_articles = models.CharField(max_length=128, null=True, blank=True)
+#     first_articles_test = models.CharField(max_length=128, null=True, blank=True)
+#     # TwoDevicesSide / TwoDevicesConstruction #
 
 
-class TwentyEightDevicesSide(BomBaseModel):
-    # TwentyEightDevicesSide / TwentyEightDevicesConstruction #
+# class TwoDevicesSideFieldPermission(models.Model):
+#     instance_id = models.IntegerField(null=True, blank=True)
+#     FIELD_CHOISES = [
+#         ("_3885", "_3885"),
+#         ("contract", "contract"),
+#         ("adv_payment", "adv_payment"),
+#         ("material_supply", "material_supply"),
+#         ("mold_or_die_or_fixture", "mold_or_die_or_fixture"),
+#         ("casting", "casting"),
+#         ("forge", "forge"),
+#         ("forming", "forming"),
+#         ("machining", "machining"),
+#         ("brazing_or_welding", "brazing_or_welding"),
+#         ("coating", "coating"),
+#         ("total_progress", "total_progress"),
+#         ("dummy_sample", "dummy_sample"),
+#         ("first_articles", "first_articles"),
+#         ("first_articles_test", "first_articles_test"),
+#     ]
+#     field = models.CharField(
+#         max_length=128, null=True, blank=True, choices=FIELD_CHOISES
+#     )
+#     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+#     editable = models.BooleanField()
 
-    #     # TwoDevicesSide / TwentyEightDevicesSide / TwoDevicesConstruction / TwentyEightDevicesConstruction #
-    # _3885 = models.CharField(max_length=128, null=True, blank=True)
-    # contract = models.CharField(max_length=32, null=True, blank=True)
-    # adv_payment = models.CharField(max_length=128, null=True, blank=True)
-    # material_supply = models.CharField(max_length=128, null=True, blank=True)
-    # mold_or_die_or_fixture = models.CharField(max_length=128, null=True, blank=True)
-    # casting = models.CharField(max_length=128, null=True, blank=True)
-    # forge = models.CharField(max_length=128, null=True, blank=True)
-    # forming = models.CharField(max_length=128, null=True, blank=True)
-    # machining = models.CharField(max_length=128, null=True, blank=True)
-    # brazing_or_welding = models.CharField(max_length=128, null=True, blank=True)
-    # coating = models.CharField(max_length=128, null=True, blank=True)
-    # total_progress = models.CharField(max_length=128, null=True, blank=True)
-    #     # TwoDevicesSide / TwentyEightDevicesSide / TwoDevicesConstruction / TwentyEightDevicesConstruction #
-
-    mass_production = models.CharField(max_length=128, null=True, blank=True)
-    # TwentyEightDevicesSide / TwentyEightDevicesConstruction #
+#     def __str__(self):
+#         return f"{self.group} {self.instance_id} {self.field}"
 
 
-class TwentyEightDevicesSideFieldPermission(models.Model):
-    instance_id = models.IntegerField(null=True, blank=True)
-    FIELD_CHOISES = [
-        ("mass_production", "mass_production"),
-    ]
-    field = models.CharField(
-        max_length=128, null=True, blank=True, choices=FIELD_CHOISES
-    )
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    editable = models.BooleanField()
+# class TwentyEightDevicesSide(BomBaseModel):
+#     # TwentyEightDevicesSide / TwentyEightDevicesConstruction #
 
-    def __str__(self):
-        return f"{self.group} {self.instance_id} {self.field}"
+#     #     # TwoDevicesSide / TwentyEightDevicesSide / TwoDevicesConstruction / TwentyEightDevicesConstruction #
+#     # _3885 = models.CharField(max_length=128, null=True, blank=True)
+#     # contract = models.CharField(max_length=32, null=True, blank=True)
+#     # adv_payment = models.CharField(max_length=128, null=True, blank=True)
+#     # material_supply = models.CharField(max_length=128, null=True, blank=True)
+#     # mold_or_die_or_fixture = models.CharField(max_length=128, null=True, blank=True)
+#     # casting = models.CharField(max_length=128, null=True, blank=True)
+#     # forge = models.CharField(max_length=128, null=True, blank=True)
+#     # forming = models.CharField(max_length=128, null=True, blank=True)
+#     # machining = models.CharField(max_length=128, null=True, blank=True)
+#     # brazing_or_welding = models.CharField(max_length=128, null=True, blank=True)
+#     # coating = models.CharField(max_length=128, null=True, blank=True)
+#     # total_progress = models.CharField(max_length=128, null=True, blank=True)
+#     #     # TwoDevicesSide / TwentyEightDevicesSide / TwoDevicesConstruction / TwentyEightDevicesConstruction #
+
+#     mass_production = models.CharField(max_length=128, null=True, blank=True)
+#     # TwentyEightDevicesSide / TwentyEightDevicesConstruction #
+
+
+# class TwentyEightDevicesSideFieldPermission(models.Model):
+#     instance_id = models.IntegerField(null=True, blank=True)
+#     FIELD_CHOISES = [
+#         ("mass_production", "mass_production"),
+#     ]
+#     field = models.CharField(
+#         max_length=128, null=True, blank=True, choices=FIELD_CHOISES
+#     )
+#     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+#     editable = models.BooleanField()
+
+#     def __str__(self):
+#         return f"{self.group} {self.instance_id} {self.field}"
 
 
 # class TwoDevicesConstruction(BomBaseModel):
@@ -771,132 +1057,132 @@ class TwentyEightDevicesSideFieldPermission(models.Model):
 #     # TwentyEightDevicesSide / TwentyEightDevicesConstruction #
 
 
-class TwoDevicesQuality(BomBaseModel):
-    review_and_ITP_approval_4_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    qualitative_evaluation_the_contractor_2_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    kick_off_meeting_3_percent = models.CharField(max_length=128, null=True, blank=True)
-    CDR_5_percent = models.CharField(max_length=128, null=True, blank=True)
-    compliant_quality_inspection_ITP_or_MQCP_65_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    submitting_an_inspection_report_accept_or_NCR_7_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    check_the_answer_design_to_NCR_5_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    issuing_quality_tag_2_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    compilation_and_approval_final_book_5_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    issuance_of_test_certificate_or_Form1_or_CoC_2_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    development_percentage = models.CharField(max_length=32, null=True, blank=True)
+# class TwoDevicesQuality(BomBaseModel):
+#     review_and_ITP_approval_4_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     qualitative_evaluation_the_contractor_2_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     kick_off_meeting_3_percent = models.CharField(max_length=128, null=True, blank=True)
+#     CDR_5_percent = models.CharField(max_length=128, null=True, blank=True)
+#     compliant_quality_inspection_ITP_or_MQCP_65_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     submitting_an_inspection_report_accept_or_NCR_7_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     check_the_answer_design_to_NCR_5_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     issuing_quality_tag_2_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     compilation_and_approval_final_book_5_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     issuance_of_test_certificate_or_Form1_or_CoC_2_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     development_percentage = models.CharField(max_length=32, null=True, blank=True)
 
 
-class TwoDevicesQualityFieldPermission(models.Model):
-    instance_id = models.IntegerField(null=True, blank=True)
-    FIELD_CHOISES = [
-        ("review_and_ITP_approval_4_percent", "review_and_ITP_approval_4_percent"),
-        (
-            "qualitative_evaluation_the_contractor_2_percent",
-            "qualitative_evaluation_the_contractor_2_percent",
-        ),
-        ("kick_off_meeting_3_percent", "kick_off_meeting_3_percent"),
-        ("CDR_5_percent", "CDR_5_percent"),
-        (
-            "compliant_quality_inspection_ITP_or_MQCP_65_percent",
-            "compliant_quality_inspection_ITP_or_MQCP_65_percent",
-        ),
-        (
-            "submitting_an_inspection_report_accept_or_NCR_7_percent",
-            "submitting_an_inspection_report_accept_or_NCR_7_percent",
-        ),
-        (
-            "check_the_answer_design_to_NCR_5_percent",
-            "check_the_answer_design_to_NCR_5_percent",
-        ),
-        ("issuing_quality_tag_2_percent", "issuing_quality_tag_2_percent"),
-        (
-            "compilation_and_approval_final_book_5_percent",
-            "compilation_and_approval_final_book_5_percent",
-        ),
-        (
-            "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
-            "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
-        ),
-        ("development_percentage", "development_percentage"),
-    ]
-    field = models.CharField(
-        max_length=128, null=True, blank=True, choices=FIELD_CHOISES
-    )
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    editable = models.BooleanField()
+# class TwoDevicesQualityFieldPermission(models.Model):
+#     instance_id = models.IntegerField(null=True, blank=True)
+#     FIELD_CHOISES = [
+#         ("review_and_ITP_approval_4_percent", "review_and_ITP_approval_4_percent"),
+#         (
+#             "qualitative_evaluation_the_contractor_2_percent",
+#             "qualitative_evaluation_the_contractor_2_percent",
+#         ),
+#         ("kick_off_meeting_3_percent", "kick_off_meeting_3_percent"),
+#         ("CDR_5_percent", "CDR_5_percent"),
+#         (
+#             "compliant_quality_inspection_ITP_or_MQCP_65_percent",
+#             "compliant_quality_inspection_ITP_or_MQCP_65_percent",
+#         ),
+#         (
+#             "submitting_an_inspection_report_accept_or_NCR_7_percent",
+#             "submitting_an_inspection_report_accept_or_NCR_7_percent",
+#         ),
+#         (
+#             "check_the_answer_design_to_NCR_5_percent",
+#             "check_the_answer_design_to_NCR_5_percent",
+#         ),
+#         ("issuing_quality_tag_2_percent", "issuing_quality_tag_2_percent"),
+#         (
+#             "compilation_and_approval_final_book_5_percent",
+#             "compilation_and_approval_final_book_5_percent",
+#         ),
+#         (
+#             "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
+#             "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
+#         ),
+#         ("development_percentage", "development_percentage"),
+#     ]
+#     field = models.CharField(
+#         max_length=128, null=True, blank=True, choices=FIELD_CHOISES
+#     )
+#     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+#     editable = models.BooleanField()
 
-    def __str__(self):
-        return f"{self.group} {self.instance_id} {self.field}"
-
-
-class TwentyEightDevicesQuality(BomBaseModel):
-    compliant_quality_inspection_ITP_or_MQCP_75_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    submitting_an_inspection_report_accept_or_NCR_12_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    check_the_answer_design_to_NCR_3_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    issuing_quality_tag_2_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    compilation_and_approval_final_book_6_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    issuance_of_test_certificate_or_Form1_or_CoC_2_percent = models.CharField(
-        max_length=128, null=True, blank=True
-    )
-    development_percent = models.CharField(max_length=32, null=True, blank=True)
+#     def __str__(self):
+#         return f"{self.group} {self.instance_id} {self.field}"
 
 
-class TwentyEightDevicesQualityFieldPermission(models.Model):
-    instance_id = models.IntegerField(null=True, blank=True)
-    FIELD_CHOISES = [
-        (
-            "compliant_quality_inspection_ITP_or_MQCP_75_percent",
-            "compliant_quality_inspection_ITP_or_MQCP_75_percent",
-        ),
-        (
-            "submitting_an_inspection_report_accept_or_NCR_12_percent",
-            "submitting_an_inspection_report_accept_or_NCR_12_percent",
-        ),
-        (
-            "check_the_answer_design_to_NCR_3_percent",
-            "check_the_answer_design_to_NCR_3_percent",
-        ),
-        ("issuing_quality_tag_2_percent", "issuing_quality_tag_2_percent"),
-        (
-            "compilation_and_approval_final_book_6_percent",
-            "compilation_and_approval_final_book_6_percent",
-        ),
-        (
-            "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
-            "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
-        ),
-        ("development_percent", "development_percent"),
-    ]
-    field = models.CharField(
-        max_length=128, null=True, blank=True, choices=FIELD_CHOISES
-    )
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    editable = models.BooleanField()
+# class TwentyEightDevicesQuality(BomBaseModel):
+#     compliant_quality_inspection_ITP_or_MQCP_75_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     submitting_an_inspection_report_accept_or_NCR_12_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     check_the_answer_design_to_NCR_3_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     issuing_quality_tag_2_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     compilation_and_approval_final_book_6_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     issuance_of_test_certificate_or_Form1_or_CoC_2_percent = models.CharField(
+#         max_length=128, null=True, blank=True
+#     )
+#     development_percent = models.CharField(max_length=32, null=True, blank=True)
 
-    def __str__(self):
-        return f"{self.group} {self.instance_id} {self.field}"
+
+# class TwentyEightDevicesQualityFieldPermission(models.Model):
+#     instance_id = models.IntegerField(null=True, blank=True)
+#     FIELD_CHOISES = [
+#         (
+#             "compliant_quality_inspection_ITP_or_MQCP_75_percent",
+#             "compliant_quality_inspection_ITP_or_MQCP_75_percent",
+#         ),
+#         (
+#             "submitting_an_inspection_report_accept_or_NCR_12_percent",
+#             "submitting_an_inspection_report_accept_or_NCR_12_percent",
+#         ),
+#         (
+#             "check_the_answer_design_to_NCR_3_percent",
+#             "check_the_answer_design_to_NCR_3_percent",
+#         ),
+#         ("issuing_quality_tag_2_percent", "issuing_quality_tag_2_percent"),
+#         (
+#             "compilation_and_approval_final_book_6_percent",
+#             "compilation_and_approval_final_book_6_percent",
+#         ),
+#         (
+#             "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
+#             "issuance_of_test_certificate_or_Form1_or_CoC_2_percent",
+#         ),
+#         ("development_percent", "development_percent"),
+#     ]
+#     field = models.CharField(
+#         max_length=128, null=True, blank=True, choices=FIELD_CHOISES
+#     )
+#     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+#     editable = models.BooleanField()
+
+#     def __str__(self):
+#         return f"{self.group} {self.instance_id} {self.field}"

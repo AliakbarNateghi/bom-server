@@ -11,22 +11,10 @@ from ..log.Tracker import TrackerAdmin
 from .models import (
     BomComponent,
     BomFieldPermission,
-    Design,
-    DesignFieldPermission,
-    Manufacturing,
-    ManufacturingFieldPermission,
-    OriginalReportCore,
-    OriginalReportCoreFieldPermission,
     ProvideComponent,
     ProvideFieldPermission,
-    TwentyEightDevicesQuality,
-    TwentyEightDevicesQualityFieldPermission,
-    TwentyEightDevicesSide,
-    TwentyEightDevicesSideFieldPermission,
-    TwoDevicesQuality,
-    TwoDevicesQualityFieldPermission,
-    TwoDevicesSide,
-    TwoDevicesSideFieldPermission,
+    ScopeMatrix,
+    ScopeMatrixFieldPermission,
 )
 
 # class MyInlines1(TabularInlineJalaliMixin, admin.TabularInline):
@@ -57,17 +45,5 @@ admin.site.register(BomComponent, TrackerAdmin)
 admin.site.register(BomFieldPermission)
 admin.site.register(ProvideComponent, TrackerAdmin)
 admin.site.register(ProvideFieldPermission)
-admin.site.register(OriginalReportCore, TrackerAdmin)
-admin.site.register(OriginalReportCoreFieldPermission)
-admin.site.register(Design, TrackerAdmin)
-admin.site.register(DesignFieldPermission)
-admin.site.register(Manufacturing, TrackerAdmin)
-admin.site.register(ManufacturingFieldPermission)
-admin.site.register(TwoDevicesSide, TrackerAdmin)
-admin.site.register(TwoDevicesSideFieldPermission)
-admin.site.register(TwentyEightDevicesSide, TrackerAdmin)
-admin.site.register(TwentyEightDevicesSideFieldPermission)
-admin.site.register(TwoDevicesQuality, TrackerAdmin)
-admin.site.register(TwoDevicesQualityFieldPermission)
-admin.site.register(TwentyEightDevicesQuality, TrackerAdmin)
-admin.site.register(TwentyEightDevicesQualityFieldPermission)
+admin.site.register(ScopeMatrix, TrackerAdmin)
+admin.site.register(ScopeMatrixFieldPermission)

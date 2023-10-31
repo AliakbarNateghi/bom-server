@@ -173,7 +173,90 @@ class Component(ModelViewSet):
     ]
 
     def scope_fields_to_return_func(self):
-        if self.kwargs["table"] == "core":
+        if self.kwargs["table"] == "bom":
+            self.scope_fields_to_return = [
+                "id",
+                "revision",
+                "ID",
+                "P_on_N_status_code",
+                "fig_no",
+                "item_no",
+                "module",
+                "level",
+                "code",
+                "parent_code",
+                "part_number",
+                "description",
+                "comment",
+                "sap_name",
+                "unit_per_assy",
+                "unit_per_end_item",
+                "corrected_units_per_end_item",
+                "gg_qty",
+                "srp",
+                "store_comment",
+                "assembly",
+                "standard_part",
+                "material",
+                "mfg_complexity_level",
+                "disassembled",
+                "supplying_or_manufacturing",
+                "internal_or_external_outsourcing",
+                "vendor",
+                "joining",
+                "manufacturing_process",
+                "raw_material_form",
+                "function",
+                "qc_criteria",
+                "manufacturing_priority",
+                "manufacturing_responsible_department",
+                "designing_responsible_department",
+                "usage_on_other_engines",
+                "manufacturing_parts_category",
+                "scope_matrix_category",
+                "requires_manufacturing_or_supplying_for_reassembly",
+                "system_D_requirements",
+                "percurment_state",
+                "details",
+                "joint_type",
+                "discarded_during_disassembly",
+                "expendables",
+                "discarded_or_unusable_according_to_docs",
+                "destroyed_for_analysis",
+                "rejected_by_qc_or_inspection",
+                "class_size_or_weight_as_required",
+                "EBOM",
+            ]
+        if self.kwargs["table"] == "provide":
+            self.scope_fields_to_return = [
+                "application_type",
+                "supply_stage",
+                "material_supplier",
+                "pr",
+                "po",
+                "subject",
+                "request_type",
+                "customer_management",
+                "contract_number",
+                "supplier",
+                "amount",
+                "adjustment_amount",
+                "currency",
+                "expert",
+                "prepayment_percentage",
+                "currency_type",
+                "prepayment_according_to_contract",
+                "prepaid_by_toga",
+                "prepaid_by_air_engine",
+                "prepayment_guarantee_check",
+                "prepayment_guarantee",
+                "mortgage_document_guarantee",
+                "financial_situation",
+                "prepayment_request_date",
+                "prepayment_amount",
+                "prepayment_date",
+            ]
+        elif self.kwargs["table"] == "core":
             self.scope_fields_to_return = self.common_fields + [
                 "disassembled",
                 "progress_certificate",
@@ -396,7 +479,6 @@ class Component(ModelViewSet):
     """
         page number pagination
     """
-
     def list(self, request, *args, **kwargs):
         permission_model = find_permission_model(self.kwargs["table"])
 

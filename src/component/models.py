@@ -411,7 +411,7 @@ class ProvideFieldPermission(models.Model):
 class ScopeMatrix(BomBaseModel):
     original_report_id = models.IntegerField(null=True, blank=True)
     fig_no = models.CharField(max_length=16, null=True, blank=True)
-    item_no = models.IntegerField(null=True, blank=True)
+    item_no = models.CharField(max_length=32, null=True, blank=True)
     module = models.CharField(max_length=16, null=True, blank=True)
     TUGA_subtitute_part_number = models.CharField(max_length=64, null=True, blank=True)
     old_system_part_no = models.CharField(max_length=64, null=True, blank=True)

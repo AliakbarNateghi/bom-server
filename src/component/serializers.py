@@ -54,6 +54,7 @@ class ScopeMatrixComponentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ScopeMatrix
         fields = [
+            "id",
             "original_report_id",
             "fig_no",
             "item_no",

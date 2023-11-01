@@ -100,171 +100,154 @@ def create_default_group(apps, schema_editor):
     cols = manufacturing_df.columns
     rating_col = cols[cols.str.contains("OPC", na=False)].item()
     for index, value in manufacturing_df[rating_col].items():
-        scope_component = ScopeComponent.objects.get_or_create(id=index + 1)[0]
+        scope_component, created = ScopeComponent.objects.get_or_create(id=index + 1)
         scope_component.OPC_or_MPP_rating = value
         scope_component.save()
 
-    # def specials(df, string, model_field):
-    #     cols = df.columns
-    #     col = cols[cols.str.contains(string)].item()
-    #     for index, value in df[col].items():
-    #         scope_component = ScopeComponent.objects.get_or_create(id=index+1)[0]
-    #         scope_component
-
     for index, row in manufacturing_df.iterrows():
-        scope_component = ScopeComponent.objects.get_or_create(id=index + 1)[0]
+        scope_component, created = ScopeComponent.objects.get_or_create(id=index + 1)
         scope_component.identification_report_metallurgical_notebook_of_the_piece = (
-            check_NaN(row["گزارش شناسايي (دفترچه متالوژيكي قطعه)"]),
+            check_NaN(row["گزارش شناسايي (دفترچه متالوژيكي قطعه)"])
         )
-        scope_component.identification_report_metallurgical_notebook_of_the_piece_certi = (
-            check_NaN(row["گزارش شناسايي (دفترچه متالوژيكي قطعه) مدرك"]),
+        scope_component.identification_report_metallurgical_notebook_of_the_piece_certi = check_NaN(
+            row["گزارش شناسايي (دفترچه متالوژيكي قطعه) مدرك"]
         )
-        scope_component.raw_material_spec = (check_NaN(row["اسپك ماده خام"]),)
-        scope_component.raw_material_spec_certificate = (
-            check_NaN(row["اسپك ماده خام مدرك"]),
+        scope_component.raw_material_spec = check_NaN(row["اسپك ماده خام"])
+        scope_component.raw_material_spec_certificate = check_NaN(
+            row["اسپك ماده خام مدرك"]
         )
-        scope_component.part_spec = (check_NaN(row["اسپک قطعه"]),)
-        scope_component.part_spec_certificate = (check_NaN(row["اسپک قطعه مدرك"]),)
-        scope_component.cover_spec = (check_NaN(row["اسپك پوشش"]),)
-        scope_component.cover_spec_certificate = (check_NaN(row["اسپك پوشش مدرك"]),)
-        scope_component.connections_spec = (check_NaN(row["اسپك اتصالات"]),)
-        scope_component.connections_spec_certificate = (
-            check_NaN(row["اسپك اتصالات مدرك"]),
+        scope_component.part_spec = check_NaN(row["اسپک قطعه"])
+        scope_component.part_spec_certificate = check_NaN(row["اسپک قطعه مدرك"])
+        scope_component.cover_spec = check_NaN(row["اسپك پوشش"])
+        scope_component.cover_spec_certificate = check_NaN(row["اسپك پوشش مدرك"])
+        scope_component.connections_spec = check_NaN(row["اسپك اتصالات"])
+        scope_component.connections_spec_certificate = check_NaN(
+            row["اسپك اتصالات مدرك"]
         )
-        scope_component.other_specs_complementary_operations = (
-            check_NaN(row["ساير اسپك‌ها (عمليات تكميلي)"]),
+        scope_component.other_specs_complementary_operations = check_NaN(
+            row["ساير اسپك‌ها (عمليات تكميلي)"]
         )
-        scope_component.other_specs_certificate = (check_NaN(row["ساير اسپك‌ها مدرك"]),)
-        scope_component.interprocess_maps = (check_NaN(row["نقشه هاي ميان فرآيندي"]),)
-        scope_component.interprocess_maps_certificate = (
-            check_NaN(row["نقشه هاي ميان فرآيندي مدرك"]),
+        scope_component.other_specs_certificate = check_NaN(row["ساير اسپك‌ها مدرك"])
+        scope_component.interprocess_maps = check_NaN(row["نقشه هاي ميان فرآيندي"])
+        scope_component.interprocess_maps_certificate = check_NaN(
+            row["نقشه هاي ميان فرآيندي مدرك"]
         )
-        # OPC_or_MPP_rating=check_NaN(row(rating_col)),
-        scope_component.rating_certificate = (check_NaN(row["راتينگ مدرك"]),)
-        scope_component.TP = (check_NaN(row["TP"]),)
-        scope_component.TP_certificate = (check_NaN(row["TP مدرك"]),)
-        scope_component.MQCP = (check_NaN(row["MQCP"]),)
-        scope_component.MQCP_certificate = (check_NaN(row["MQCP مدرك"]),)
-        scope_component.ITP = (check_NaN(row["ITP"]),)
-        scope_component.ITP_certificate = (check_NaN(row["ITP مدرك"]),)
+        scope_component.rating_certificate = check_NaN(row["راتينگ مدرك"])
+        scope_component.TP = check_NaN(row["TP"])
+        scope_component.TP_certificate = check_NaN(row["TP مدرك"])
+        scope_component.MQCP = check_NaN(row["MQCP"])
+        scope_component.MQCP_certificate = check_NaN(row["MQCP مدرك"])
+        scope_component.ITP = check_NaN(row["ITP"])
+        scope_component.ITP_certificate = check_NaN(row["ITP مدرك"])
         scope_component.save()
 
     cols = _2_devices_side_df.columns
     col = cols[cols.str.contains("3885", na=True)].item()
     for index, value in _2_devices_side_df[col].items():
-        scope_component = ScopeComponent.objects.get_or_create(id=index + 1)[0]
+        scope_component, created = ScopeComponent.objects.get_or_create(id=index + 1)
         scope_component._3885 = value
         scope_component.save()
     col = cols[cols.str.contains("Adv", na=False)].item()
     for index, value in _2_devices_side_df[col].items():
-        scope_component = ScopeComponent.objects.get_or_create(id=index + 1)[0]
+        scope_component, created = ScopeComponent.objects.get_or_create(id=index + 1)
         scope_component.adv_payment = value
         scope_component.save()
 
     for index, row in _2_devices_side_df.iterrows():
-        scope_component = ScopeComponent.objects.get_or_create(id=index + 1)[0]
-        # scope_component._3885=check_NaN(row("3885")),
-        scope_component.contract = (check_NaN(row["Contract"]),)
-        # scope_component.adv_payment=check_NaN(row["Adv. Payment"]),
-        scope_component.material_supply = (check_NaN(row["Material Supply"]),)
-        scope_component.mold_or_die_or_fixture = (check_NaN(row["Mold/Die/Fixture"]),)
-        scope_component.casting = (check_NaN(row["Casting"]),)
-        scope_component.forge = (check_NaN(row["Forge"]),)
-        scope_component.forming = (check_NaN(row["Forming"]),)
-        scope_component.machining = (check_NaN(row["Machining"]),)
-        scope_component.brazing_or_welding = (check_NaN(row["Brazing/Welding"]),)
-        scope_component.coating = (check_NaN(row["Coating"]),)
-        scope_component.dummy_sample = (check_NaN(row["Dummy sample"]),)
+        scope_component, created = ScopeComponent.objects.get_or_create(id=index + 1)
+        scope_component.contract = check_NaN(row["Contract"])
+        scope_component.material_supply = check_NaN(row["Material Supply"])
+        scope_component.mold_or_die_or_fixture = check_NaN(row["Mold/Die/Fixture"])
+        scope_component.casting = check_NaN(row["Casting"])
+        scope_component.forge = check_NaN(row["Forge"])
+        scope_component.forming = check_NaN(row["Forming"])
+        scope_component.machining = check_NaN(row["Machining"])
+        scope_component.brazing_or_welding = check_NaN(row["Brazing/Welding"])
+        scope_component.coating = check_NaN(row["Coating"])
+        scope_component.dummy_sample = check_NaN(row["Dummy sample"])
         scope_component.first_articles = (
             row["First Articles"] if row["First Articles"] else None,
         )
-        scope_component.first_articles_test = (check_NaN(row["First Articles Test"]),)
-        scope_component._2_side_total_progress = (check_NaN(row["Total Progress"]),)
+        scope_component.first_articles_test = check_NaN(row["First Articles Test"])
+        scope_component._2_side_total_progress = check_NaN(row["Total Progress"])
         scope_component.save()
 
     for index, row in _28_devices_side_df.iterrows():
-        scope_component = ScopeComponent.objects.get_or_create(id=index + 1)[0]
-        scope_component.mass_production = (check_NaN(row["Mass Production"]),)
-        scope_component._28_side_total_progress = (check_NaN(row["Total Progress"]),)
+        scope_component, created = ScopeComponent.objects.get_or_create(id=index + 1)
+        scope_component.mass_production = check_NaN(row["Mass Production"])
+        scope_component._28_side_total_progress = check_NaN(row["Total Progress"])
         scope_component.save()
 
     for index, row in _2_devices_manufacturing_df.iterrows():
-        scope_component = ScopeComponent.objects.get_or_create(id=index + 1)[0]
-        scope_component._2_manufacturing_total_progress = (
-            check_NaN(row["Total Progress"]),
+        scope_component, created = ScopeComponent.objects.get_or_create(id=index + 1)
+        scope_component._2_manufacturing_total_progress = check_NaN(
+            row["Total Progress"]
         )
         scope_component.save()
 
     for index, row in _28_devices_manufacturing_df.iterrows():
-        scope_component = ScopeComponent.objects.get_or_create(id=index + 1)[0]
-        scope_component._28_manufacturing_total_progress = (
-            check_NaN(row["Total Progress"]),
+        scope_component, created = ScopeComponent.objects.get_or_create(id=index + 1)
+        scope_component._28_manufacturing_total_progress = check_NaN(
+            row["Total Progress"]
         )
         scope_component.save()
 
     for index, row in _2_devices_quality_df.iterrows():
-        scope_component = ScopeComponent.objects.get_or_create(id=index + 1)[0]
-        scope_component.review_and_ITP_approval_4_percent = (
-            check_NaN(row["بررسی و \nتائید ITP \n(4%)"]),
+        scope_component, created = ScopeComponent.objects.get_or_create(id=index + 1)
+        scope_component.review_and_ITP_approval_4_percent = check_NaN(
+            row["بررسی و \nتائید ITP \n(4%)"]
         )
-        scope_component.qualitative_evaluation_the_contractor_2_percent = (
-            check_NaN(row["ارزيابي كيفي\n پيمانكار\n(2%)"]),
+        scope_component.qualitative_evaluation_the_contractor_2_percent = check_NaN(
+            row["ارزيابي كيفي\n پيمانكار\n(2%)"]
         )
-        scope_component.kick_off_meeting_3_percent = (
-            check_NaN(row["Kick Off \nMeeting\n(3%)"]),
+        scope_component.kick_off_meeting_3_percent = check_NaN(
+            row["Kick Off \nMeeting\n(3%)"]
         )
-        scope_component.CDR_5_percent = (check_NaN(row["CDR\n(5%)"]),)
-        scope_component.compliant_quality_inspection_ITP_or_MQCP_65_percent = (
-            check_NaN(row[" بازرسي كيفي مطابق\n ITP/MQCP\n(65%)"]),
+        scope_component.CDR_5_percent = check_NaN(row["CDR\n(5%)"])
+        scope_component.compliant_quality_inspection_ITP_or_MQCP_65_percent = check_NaN(
+            row[" بازرسي كيفي مطابق\n ITP/MQCP\n(65%)"]
         )
         scope_component.submitting_an_inspection_report_accept_or_NCR_7_percent = (
-            check_NaN(row["ارائه گزارش بازرسي\n Accept/NCR \n(7%)"]),
+            check_NaN(row["ارائه گزارش بازرسي\n Accept/NCR \n(7%)"])
         )
-        scope_component.check_the_answer_design_to_NCR_5_percent = (
-            check_NaN(row["بررسي پاسخ \nطراحي به NCR \n(5%)"]),
+        scope_component.check_the_answer_design_to_NCR_5_percent = check_NaN(
+            row["بررسي پاسخ \nطراحي به NCR \n(5%)"]
         )
-        scope_component.issuing_quality_tag_2_percent = (
-            check_NaN(row["صدور\n تگ كيفي\n(2%)"]),
+        scope_component.issuing_quality_tag_2_percent = check_NaN(
+            row["صدور\n تگ كيفي\n(2%)"]
         )
-        scope_component.compilation_and_approval_final_book_5_percent = (
-            check_NaN(row[" تدوين و تاييد\n Final Book \n(5%)"]),
+        scope_component.compilation_and_approval_final_book_5_percent = check_NaN(
+            row[" تدوين و تاييد\n Final Book \n(5%)"]
         )
         scope_component.issuance_of_test_certificate_or_Form1_or_CoC_2_percent = (
-            check_NaN(row["صدور Test Certificate\n/Form1/CoC \n(2%)"]),
+            check_NaN(row["صدور Test Certificate\n/Form1/CoC \n(2%)"])
         )
-        scope_component._2_quality_total_progress = (
-            check_NaN(row["میزان درصد \nپیشرفت"]),
+        scope_component._2_quality_total_progress = check_NaN(
+            row["میزان درصد \nپیشرفت"]
         )
         scope_component.save()
 
-    cols = _28_devices_quality_df.columns
-    # col = cols[cols.str.contains("درصد", na=False)].item()
-    # for index, value in _2_devices_side_df[col].items():
-    #     scope_component = ScopeComponent.objects.get_or_create(id=index+1)[0]
-    #     scope_component.compliant_quality_inspection_ITP_or_MQCP_75_percent=value
-    #     scope_component.save()
-
     for index, row in _28_devices_quality_df.iterrows():
-        scope_component = ScopeComponent.objects.get_or_create(id=index + 1)[0]
-        scope_component.compliant_quality_inspection_ITP_or_MQCP_75_percent = (
-            check_NaN(row[" بازرسي كيفي مطابق\n ITP/MQCP\n(75%)"]),
+        scope_component, created = ScopeComponent.objects.get_or_create(id=index + 1)
+        scope_component.compliant_quality_inspection_ITP_or_MQCP_75_percent = check_NaN(
+            row[" بازرسي كيفي مطابق\n ITP/MQCP\n(75%)"]
         )
         scope_component.submitting_an_inspection_report_accept_or_NCR_12_percent = (
-            check_NaN(row["ارائه گزارش بازرسي\n Accept/NCR \n(12%)"]),
+            check_NaN(row["ارائه گزارش بازرسي\n Accept/NCR \n(12%)"])
         )
-        scope_component.check_the_answer_design_to_NCR_3_percent = (
-            check_NaN(row["بررسي پاسخ \nطراحي به NCR \n(3%)"]),
+        scope_component.check_the_answer_design_to_NCR_3_percent = check_NaN(
+            row["بررسي پاسخ \nطراحي به NCR \n(3%)"]
         )
-        scope_component.issuing_quality_tag_2_percent = (
-            check_NaN(row["صدور\n تگ كيفي\n(2%)"]),
+        scope_component.issuing_quality_tag_2_percent = check_NaN(
+            row["صدور\n تگ كيفي\n(2%)"]
         )
-        scope_component.compilation_and_approval_final_book_6_percent = (
-            check_NaN(row[" تدوين و تاييد\n Final Book \n(6%)"]),
+        scope_component.compilation_and_approval_final_book_6_percent = check_NaN(
+            row[" تدوين و تاييد\n Final Book \n(6%)"]
         )
         scope_component.issuance_of_test_certificate_or_Form1_or_CoC_2_percent = (
-            check_NaN(row["صدور Test Certificate\n/Form1/CoC \n(2%)"]),
+            check_NaN(row["صدور Test Certificate\n/Form1/CoC \n(2%)"])
         )
-        scope_component._28_quality_total_progress = (check_NaN(row["درصد \nپیشرفت"]),)
+        scope_component._28_quality_total_progress = check_NaN(row["درصد \nپیشرفت"])
         scope_component.save()
 
     bom_components = []

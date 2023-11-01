@@ -271,6 +271,7 @@ class Component(ModelViewSet):
                 "assembly_drawing",
                 "construction_plan_with_assembly_view",
                 "identification_report_metallurgical_notebook_of_the_piece",
+                "certificate_code",
                 "identification_report_metallurgical_notebook_of_the_piece_certi",
                 "raw_material_spec",
                 "raw_material_spec_certificate",

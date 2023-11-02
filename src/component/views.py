@@ -99,7 +99,7 @@ def find_permission_model(kwargs):
         return BomFieldPermission.objects.all()
     elif kwargs == "provide":
         return ProvideFieldPermission.objects.all()
-    elif kwargs in scope_kwargs:
+    elif kwargs == "scope":
         return ScopeMatrixFieldPermission.objects.all()
 
 
@@ -119,7 +119,7 @@ def find_permission_serializer(kwargs):
         return BomFieldPermissionSerializer
     elif kwargs == "provide":
         return ProvideFieldPermissionSerializer
-    elif kwargs in scope_kwargs:
+    elif kwargs == "scope":
         return ScopeMatrixFieldPermissionSerializer
 
 
@@ -229,6 +229,7 @@ class Component(ModelViewSet):
             ]
         if self.kwargs["table"] == "provide":
             self.scope_fields_to_return = [
+                "id",
                 "application_type",
                 "supply_stage",
                 "material_supplier",
@@ -588,7 +589,6 @@ class Component(ModelViewSet):
                     value = json_dict[instance.field]
                     # for instance in instances:
                     #     for key, value in json_dict.items():
-                    # print(f"key : {key}")
                     #         if instance.field == key and instance.editable:
                     data = {f"{instance.field}": value}
                     serializer = self.get_serializer(obj, data=data, partial=True)
@@ -677,8 +677,11 @@ class FieldPermissionView(ModelViewSet):
         )
         instance_ids = paginator.get_page(page)
         instances = instances.filter(instance_id__in=instance_ids)
-
         editable_dict = {}
+        component = find_component_model(self.kwargs["table"])
+
+        initial_list = [{'id': i} for i in range(1, component.count()+1)]
+
         for instance in instances:
             id = instance.instance_id
             try:
@@ -687,13 +690,13 @@ class FieldPermissionView(ModelViewSet):
                 editable_dict[id][instance.field] = instance.editable
             except:
                 pass
-
-        component = find_component_model(self.kwargs["table"])
+        
+        editable_values = list(editable_dict.values())
+        editable_values += [item for item in initial_list if not any(item['id'] == i['id'] for i in editable_values)]
         response_data = {
-            "editables": list(editable_dict.values()),
+            "editables": editable_values,
             "count": component.count(),
         }
-
         return Response(response_data, status=status.HTTP_200_OK)
 
     def create(self, request, **kwargs):

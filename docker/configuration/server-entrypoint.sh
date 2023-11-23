@@ -5,41 +5,32 @@ do
     echo "Waiting for server volume..."
 done
 
-pwd
 
+# until python3 manage.py makemigrations
+# do
+#     echo "Waiting for migrations to be ready..."
+#     sleep 2
+# done
 
-until python3 manage.py migrate
+until python3 manage.py migrate --no-input
 do
     echo "Waiting for db to be ready..."
     sleep 2
 done
 
 
-until python3 manage.py collectstatic --noinput
+until python3 manage.py collectstatic --no-input
 do 
     echo "Collecting static files..."
-    slepp 2
+    sleep 2
 done
 
-# echo '----------------------------------------------------------------------------'
-# echo 'test'
-# echo '----------------------------------------------------------------------------'
-# ls -ltrh /
-# echo '----------------------------------------------------------------------------'
-# ls -ltrh /static
-# echo '----------------------------------------------------------------------------'
-# ls -ltrh /SysAssist-backend/
-# echo '----------------------------------------------------------------------------'
-# ls -ltrh /SysAssist-backend/static
-# echo '----------------------------------------------------------------------------'
-# ls -ltrh /static/rest_framework/js
-# echo '----------------------------------------------------------------------------'
+ls -ltrh staticfiles
 
 
 # python3 manage.py createsuperuser --noinput
 
-gunicorn configuration.wsgi --bind 0.0.0.0:8000 
-# --workers 1 --threads 1
+gunicorn configuration.wsgi:application --bind 0.0.0.0:8000 --workers 1 --threads 1
 
 # for debug
-python3 manage.py runserver 0.0.0.0:8000
+# python3 manage.py runserver 0.0.0.0:8000

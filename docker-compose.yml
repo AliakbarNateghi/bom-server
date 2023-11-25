@@ -21,7 +21,7 @@ services:
             CELERY_RESULT_BACKEND: "redis://redis:6379/0"
         depends_on: 
             - db
-        scale: 4  # Adjust the number of replicas as needed
+        # scale: 4  # Adjust the number of replicas as needed
     nginx:
         # restart: always
         # image: nginx:1.23-alpine

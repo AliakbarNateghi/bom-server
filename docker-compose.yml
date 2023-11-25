@@ -14,13 +14,14 @@ services:
         expose:
             - 8000     
         environment:
-            DEBUG: "True"
+            DEBUG: "False"
             # ALLOWED_HOSTS: "localhost,192.168.109.123,http://192.168.109.123:8080"
             # CORS_ALLOWED_ORIGINS : "http://192.168.109.123:8080"
             CELERY_BROKER_URL: "redis://redis:6379/0"
             CELERY_RESULT_BACKEND: "redis://redis:6379/0"
         depends_on: 
             - db
+        scale: 4  # Adjust the number of replicas as needed
     nginx:
         # restart: always
         # image: nginx:1.23-alpine

@@ -29,26 +29,14 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
-# ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.109.123"]
 
-# Enable CSRF protection
-# CSRF_COOKIE_SECURE = True  # Set to True if using HTTPS
-# CSRF_COOKIE_HTTPONLY = True
-# CSRF_USE_SESSIONS = True
-# CSRF_TRUSTED_ORIGINS = ["http://192.168.109.123:8080"]
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
+CSRF_COOKIE_DOMAIN = os.getenv("CSRF_COOKIE_DOMAIN").split(",")
+CSRF_COOKIE_SECURE = os.getenv("CSRF_COOKIE_SECURE")
+CSRF_COOKIE_HTTPONLY = os.getenv("CSRF_COOKIE_HTTPONLY")
 
 
 CORS_ORIGIN_ALLOW_ALL = os.getenv("CORS_ORIGIN_ALLOW_ALL", "False").lower() == "true"
-
-
-# CORS_ALLOWED_ORIGINS = [
-#     "http://192.168.109.123:8080",
-#     "http://*",
-#     "https://*",
-# ]
-# CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
-
 
 CORS_ALLOW_CREDENTIALS = True
 

@@ -25,9 +25,6 @@ do
     sleep 2
 done
 
-ls -ltrh staticfiles
-
-
 # python3 manage.py createsuperuser --noinput
 
 gunicorn configuration.wsgi:application --bind 0.0.0.0:8000 --workers 1 --threads 1

@@ -5,12 +5,17 @@ do
     echo "Waiting for server volume..."
 done
 
+until python3 manage.py makemigrations
+do
+    echo "Waiting for migrations to be ready..."
+    sleep 2
+done
 
-# until python3 manage.py makemigrations
-# do
-#     echo "Waiting for migrations to be ready..."
-#     sleep 2
-# done
+until mv ./initial_migrations/* ./migrations
+do
+    echo "Moving initial migrations"
+    sleep 2
+done
 
 until python3 manage.py migrate --no-input
 do

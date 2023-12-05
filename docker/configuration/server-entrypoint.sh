@@ -11,7 +11,7 @@ do
     sleep 2
 done
 
-until cp initial_migrations/* migrations/
+until cp ./src/core/initial_migrations/* ./src/core/migrations/
 do
     echo "Moving initial migrations"
     sleep 2
